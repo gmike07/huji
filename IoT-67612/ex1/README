@@ -1,0 +1,33 @@
+----- Students data -----
+Mike Greenbaum, Mike.Greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - socket.c: A socket component, Used to read and write any text data from a given host.
+    - socket.h
+
+    -  HTTP_client.c: A HTTP component, Used to communicate with some host by using the HTTP protocol.
+    - HTTP_client.h
+
+    - main.c: Test file, to check our implementation, as the exercise require.
+    - README: Project description file.
+
+----- Brief explanation -----
+We created 2 different components, The socket and the HTTP_client.
+* The Http_client component is relies on the Socket one, By referring to it as a "black box" that can read and write any
+text data to a given host.
+The main responsibility of the Http_client is to communicate with the Http protocol, and it doing that by relying on
+the Socket component.
+
+* The Socket component is  deliver some simple API of the Socket library in c.
+
+
+----- Program flow -----
+When the user use one of the Http_client function, the flow goes as following:
+    1) The Http_client component take the properties of the request that the user set (e.g The URL) and "translate" the
+        request to HTTP form. Doing that with preset hard-coded template of the desire HTTP request.
+    2) Use the socket component to deliver the request.
+    3) Use the socket component to read the response.
+    4) Extract the "real" data from the response (without all Http headers and etc')
+    5) Return the data.
+

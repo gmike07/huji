@@ -1,0 +1,59 @@
+----- Students data -----
+Mike Greenbaum, mike.greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - serial_io_linux.c: Interface to communicate with the modem.
+    - serial_io.h
+
+    - global.h
+
+    - cellular.c - Interface to perform some operations with the modem.
+    - cellular.h
+
+    - cellular_common.c - Contain common functions used in cellular.
+    - cellular_common.h
+
+    - cellular_parse_operators.c - Contains the parsing functions of the given data fom the modem.
+    - cellular_parse_operators.h
+
+     - cellular_parse_physical.c - Contains the parsing functions of physical data from the modem.
+     - cellular_parse_physical.h
+
+     - HTTP_client.c - A HTTP component, Used to communicate with some host by using the HTTP protocol.
+     - HTTP_client.h
+
+     - serial_io_linux.c - Interface to communicate with the modem.
+     - serial_io_linux.h
+
+    - main.c: Main file to run the exercise required code, with our implementation.
+    - README: Project description file.
+
+----- Brief explanation -----
+We implemented cellular socket which communicate with HTTP protocol.
+
+NOTE: We implement the not transparent socket, via: "SISW" and "SISR" as the BONUS required. :)
+
+----- Program flow -----
+1) Connecting to the modem.
+2) Verify the connection by sending AT commands.
+3) Send "ATE0" in oder to disable the echo.
+4) Send "AT+CREG?" until we got 1 or 5 at the status in order to connect to the network.
+5) Send "AT^SICS=0,conType,"GPRS0"...." in order to define the connection profile.
+6) Send "AT^SICS?" in order to verify the connection profile is well defined.
+7) Send "AT^SISS=1,"srvType","Socket"....." in order to define the service profile.
+8) Send "AT^SCFG="Tcp/WithURCs","on"" in order to turn URC on.
+9) Send "AT^SISS?" in order to verify the service profile is well defined.
+10) Send "AT^SISO=1" in order to open the socket for connection for writing.
+11) Send "AT^SISO=1,1" in order to verify the connection is UP.
+12) Send "AT^SISW=1,58,0" in order to send "GET / HTTP/1.1\r\nHost: en8wtnrvtnkt5.x.pipedream.net:80\r\n\r\n"
+13) Send "AT^SISR=1,1024" in order to read the HTTP response.
+14) Send "AT^SISC=1" in order to close the socket.
+15) Send "AT^SISO=1" in order to open the socket for connection for writing.
+16) Send "AT^SISO=1,1" in order to verify the connection is UP.
+17) Send "AT^SISW=1,200,0" in order to send
+    "POST / HTTP/1.1\r\nHost: en8wtnrvtnkt5.x.pipedream.net:80\r\nContent-Type: text/plain\r\nUser-Agent: IoTWorkshop
+    \r\nCache-Control: no-cache\r\nContent-Length: 21\r\nConnection: keep-alive\r\n\r\nhello cellular world!\r\n\r\n"
+18) Send "AT^SISR=1,1024" in order to read the HTTP response.
+19) Send "AT^SISC=1" in order to close the socket.
+20) Disconnect.

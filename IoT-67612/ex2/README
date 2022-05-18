@@ -1,0 +1,35 @@
+----- Students data -----
+Mike Greenbaum, Mike.Greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - socket.c: A socket component, Used to read and write any text data from a given host.
+    - socket.h
+
+    - MQTTClient.c: A HTTP component, Used to communicate with some host by using the HTTP protocol.
+    - MQTTClient.h
+
+    - wolfmqtt\: Folder with all wolfmqtt library required files.
+
+    - main.c: Main file to run the exercise required code, with our implementation.
+    - README: Project description file.
+
+----- Brief explanation -----
+We created MQTTCtx and MqttNet objects, which needed to connect to the broker.
+The MqttNet has some functions that we implement in MQTTCLient.c file, which use our socket from ex1.
+
+Then, we initialized these objects as the wolfMQTT\examples does.
+
+Following the wolfMQTT\examples\mqttclient code that demonstrates the usage of the wolfMQTT library we
+Subscribe, Publish, and Read message from the desire topics, as the exercise required.
+
+----- Program flow -----
+
+1) Initializing MQTTCtx and MqttNet objects.
+1.1) Assign to the MqttNet our implemented function.
+2) Subscribe to the desire topic.
+3) Publish the first message.
+4) Publish the second message.
+5) Receive message.
+6) Publish the third message.
+7) Disconnect.

@@ -1,0 +1,46 @@
+----- Students data -----
+Mike Greenbaum, mike.greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - serial_io_linux.c: Interface to communicate with the modem.
+    - serial_io.h
+
+    - global.h
+
+    - cellular.c - Interface to perform some operations with the modem.
+    - cellular.h
+
+    - cellular_common.c - Contain common functions used in cellular.
+    - cellular_common.h
+
+    - cellular_parse_operators.c - Contains the parsing functions of the given data fom the modem.
+    - cellular_parse_operators.h
+
+     - cellular_parse_physical.c - Contains the parsing functions of physical data from the modem.
+     - cellular_parse_physical.h
+
+     - MQTTClient.c - A MQTT component, Used to communicate with some host by using the MQTT protocol.
+     - MQTTClient.h
+
+     - serial_io_linux.c - Interface to communicate with the modem.
+     - serial_io_linux.h
+
+    - main.c: Main file to run the exercise required code, with our implementation.
+    - README: Project description file.
+
+----- Brief explanation -----
+We combine Ex2 and Ex5 with few changes, so that we could connect to MQTT server from our modem.
+
+----- Program flow -----
+1) Initialize the modem.
+2) Register to network.
+3) Read all available networks in order to make MSG2.
+4) Initializing MQTTCtx and MqttNet objects.
+5) Connect to the beoker.
+6) Publish the first message to "huji_iot_class/2021_2022".
+7) Publish the second message to "huji_iot_class/2021_2022/357044060321475"
+8) Wait until receive message on "juji_iot_class/2021_2022/357044060321475/recv"
+9) Print the received message.
+10) Publish the third message to "huji_iot_class/2021_2022/357044060321475/disconnect".
+11) Disconnect.

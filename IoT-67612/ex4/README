@@ -1,0 +1,32 @@
+----- Students data -----
+Mike Greenbaum, mike.greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - serial_io.c: Interface to communicate with the modem.
+    - serial_io.h
+    - global.h
+
+    - cellular.c - Interface to perform some operations with the modem.
+    - cellular.h
+
+    - main.c: Main file to run the exercise required code, with our implementation.
+    - README: Project description file.
+
+----- Brief explanation -----
+We created "cellular" interface with some functions to communicate with the modem and perform some operation with clean
+interface.
+
+In order to run the bonus, please uncomment the relevant part.
+
+----- Program flow -----
+
+1) Connecting to the modem.
+2) Verify the connection by sending AT commands.
+3) Send "AT+CCID" and extract the CCID.
+4) Send "AT+GSN" and extract the IMEI.
+5) Send "AT+CREG?" in order to verify the network connection "0,1" or "0,5"
+6) Send "AT^SMONI" in order to check that there is an operator that we can connect to.
+7) Iterate over all available networks and connect to the first success.
+8) Send "AT+CSQ" in order to check the signal quality.
+9) Disconnect.

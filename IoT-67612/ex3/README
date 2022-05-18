@@ -1,0 +1,26 @@
+----- Students data -----
+Mike Greenbaum, Mike.Greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - serial_io.c: Interface to communicate with the modem.
+    - serial_io.h
+    - global.h
+
+    - main.c: Main file to run the exercise required code, with our implementation.
+    - README: Project description file.
+
+----- Brief explanation -----
+We created Serial with simple read and write functions, in order to communicate with the modem.
+
+----- Program flow -----
+
+1) Initializing the modem.
+2) Wait until "+PBREADY" receive.
+3) Send "AT" command and print the response.
+4) Send "AT+CCID" command and print the response.
+5) Send "AT+GSN" command and print the response.
+6) Send "AT+CREG?" command and print the response.
+7) Send "AT+COPS?" command and print the response.
+8) Send "AT+COPS=?" command and print the response.
+7) Disconnect.
