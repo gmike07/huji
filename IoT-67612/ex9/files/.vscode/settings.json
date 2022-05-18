@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "my_printf_lib.h": "c",
+        "mqttclient.h": "c",
+        "utils.h": "c"
+    }
+}

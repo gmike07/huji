@@ -1,0 +1,37 @@
+----- Students data -----
+Mike Greenbaum, mike.greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - main.c - This is the main file that the MCU run when turn on.
+    - main.h
+
+    - app.c - Helper moudle that make the code mroe organize. In thid moudle we define what will run in each iteration.
+    - app.h
+
+    - serial_io_efm32pg12.c  Implemenation of the serial with usart.
+    - serial_io.h
+
+    - my_printf_lib.c - Helper lib for printing.
+    - my_printf_lib.h
+
+    - global.h - include some global defines.
+
+    - README: Project description file.
+
+----- Brief explanation -----
+In this exercise we implement a serail comunication using USART.
+We use the IOStream libary in order to do that.
+We implement serial_io which contains some basic function that help us communicate with USART.
+In addition we implement the main file, that run a basic program flow (as the exercise require) and test our serial implementation.
+
+----- Program flow -----
+1) main is run, and enter the following loop:
+2) "app_process_action" is called from "App" module.
+And implement the following inerupts:
+- Every 10 seconds that passed, we print to the screen the number of times BTN0 is pressed.
+- Every time BTN0 is pressed we update the counter for BTN0.
+- Every time BTN1 is pressed we send through "Serial_io" a message that contains the number of times BTN0 was pressed. 
+  The sending process is done with interupts tha the IOStream implement for us.
+
+In additionn the IOStream implement for us an interupts that handle the receing data, so we only comunicate with Serial_io in order to get a data that we recieved.

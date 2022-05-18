@@ -1,0 +1,35 @@
+----- Students data -----
+Mike Greenbaum, mike.greenbaum@mail.huji.ac.il, 211747639
+Yuval Otmazgin, Yuval.Otmazgin@mail.huji.ac.il, 206647620
+
+----- Files in the project: -----
+    - main.c - This is the main file that the MCU run when turn on.
+    - main.h
+
+    - app.c - Helper moudle that make the code mroe organize. In thid moudle we define what will run in each iteration.
+    - app.h
+
+    - ex7_lib.c  Implemenation of the exerceise flow.
+    - ex7_lib.h
+
+    - my_printf_lib.c - Helper lib for printing.
+    - my_printf_lib.h
+
+    - README: Project description file.
+
+----- Brief explanation -----
+In this exercise we build a simple program that run on our MCU as the exercise require.
+In addition we implement a simple printf library that fit for our screen.
+
+- What we implement?
+At the start we print the menu.
+When we click BTN0, we start count the number of blinking and print on the screen.
+When we click BTN1, we print the HFXO. (If the leds were blinking we stop them.)
+* After 10 seconds of no operations, we stop the blinking (the leds stay at the state there were) and print the menu.
+
+----- Program flow -----
+1) main is run, and enter the following loop:
+2) "app_process_action" is called from "App" module.
+3) "ex7_process_action" is called from "ex7_lib" module, and check if it has somethings to do according to the interrupts that happends.
+*) Every time that interruped is happened some boolean variables are change, and the "ex7_process_action" function will operate as needed.  
+    (We made it in this way in order to make the interrupts call backs as short as possible.)

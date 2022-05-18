@@ -1,0 +1,41 @@
+# Silicon Labs Project Configuration Tools: slcp, v0, Component selection file.
+project_name: simple_button_baremetal
+label: simple_button_baremetal
+description: |
+  This example project shows how to toggle LEDs using buttons in a bare-metal environment.
+category: Example|Platform
+package: platform
+quality: production
+source:
+- {path: app.c}
+- {path: main.c}
+- {path: simple_button_baremetal.c}
+tag: ['hardware:component:button:1+', 'hardware:component:led:1+']
+include:
+- path: ''
+  file_list:
+  - {path: app.h}
+  - {path: simple_button_baremetal.h}
+sdk: {id: gecko_sdk, version: 3.2.3}
+toolchain_settings: []
+component:
+- {id: power_manager}
+- {id: EFM32PG12B500F1024GL125}
+- {id: glib}
+- {id: sl_system}
+- {id: iostream_retarget_stdio}
+- instance: [btn0, btn1]
+  id: simple_button
+- {id: iostream}
+- {id: iostream_swo}
+- {id: silabs_core_response_print}
+- instance: [led0, led1]
+  id: simple_led
+- {id: printf}
+- {id: device_init}
+- {id: segger_rtt_printf}
+- {id: brd2501a}
+define:
+- {name: DEBUG_EFM}
+ui_hints: {}
+
