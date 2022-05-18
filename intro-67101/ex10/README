@@ -1,0 +1,31 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex10:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 3 files:
+
+README - this file
+AUTHORS - a file that contains the authors of the project
+ship.py - a file that handles the ship object
+asteroid.py - a file that handles the asteroid object
+torpedo.py - a file that handles the torpedo object
+asteroids_main.py - a file that handles the logic of the game
+
+======================
+=  Special Comments  =
+======================
+
+special shot: it is a torpedo that moves diffrently.
+it chooses the closest meteor and follows it by the next algorithm:
+    if the x value are diffrent, fix the x value (by MAX_SPEED or less)
+    else fix the y value (by MAX_SPEED or less)
+if the asteroid is destroyed not by thus shot, the shot chooses a new target.

@@ -1,0 +1,191 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+      <title>Project 1: Search in Blokus</title>
+      <link href="projects.css" rel="stylesheet" type="text/css">
+   </head>
+   <body>
+      <h2>Project 1: Search in Blokus</h2>
+      <!--announcements-->
+      <blockquote>
+         <center>
+            <img src="ex1.png" width="400px" />
+         </center>
+      </blockquote>
+      <h4>Due on April 17, 23:00</h4>
+      <h3>Introduction</h3>
+      <p>In this project you will write search algorithms for a simple game based on a game called Blokus. Please familiarizer yourself with the game online. You should read the <a href="https://en.wikipedia.org/wiki/Blokus" > 
+         rules</a> and you can play against <a href="http://www.searchamateur.com/Play-Free-Online-Games/Blokus-Board-Game.htm" > each other </a>  or 
+         <a href="https://blokee.mattle.online/lobby/rooms" >
+         computer players</a>. <br />
+         We have provided several puzzles based on the game, which you will solve using search algorithms.
+      </p>
+      <p>The code for this project consists of several Python files, some of which you will need to read and understand in order to complete the assignment, and some of which you can ignore. You can download all the code and supporting files (including this description) as a <a href="blokus.zip">zip archive</a>.
+      <table border="0" cellpadding="10">
+         <tr>
+            <td colspan="2"><b>Files you'll edit:</b></td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/search.html">search.py</a></code></td>
+            <td>Where all of your search algorithms will reside.</td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/blokus_problems.html">blokus_problems.py</a></code></td>
+            <td>Where your problem definitions and helper functions will reside.</td>
+         </tr>
+         <tr>
+            <td colspan="2"><b>Files you might want to look at:</b></td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/game.html">game.py</a></code></td>
+            <td>Main game-running file. This file also allows you to watch a game of Blokus to get a feel for how it works. </td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/board.html">board.py</a></code></td>
+            <td>Defines the board layout and rules, and holds some supporting definitions and classes.</td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/util.html">util.py</a></code></td>
+            <td>Useful data structures for implementing search algorithms.</td>
+         </tr>
+         <tr>
+            <td colspan="2"><b>Supporting files you can ignore:</b></td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/displays.html">displays.py</a></code></td>
+            <td>Graphics for Blokus</td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/inputs.html">inputs.py</a></code></td>
+            <td>Contains a random player and an interface allowing human interaction.</td>
+         </tr>
+         <tr>
+            <td><code><a href="docs/pieces.html">pieces.py</a></code></td>
+            <td>Loads lists of game pieces from a file</td>
+         </tr>
+      </table>
+      <p>
+      <p><strong>What to submit:</strong> You will fill in portions of <code><a href="docs/search.html">search.py</a></code> and <code><a href="docs/blokus_problems.html">blokus_problems.py</a></code> during the assignment.  You should submit these two files (only) and a README.txt as a zip file in the moodle website. <b>Each team should submit exactly one file!</b></p>
+      <p><strong>Evaluation:</strong> Your code will be autograded for technical
+         correctness. The autograder machine is running Python 3.4, <strong> don't use Python 2.7!</strong>
+         Please <em>do not</em> change the names of any provided functions or classes within the code, or you will wreak havoc on the autograder.<b> The final grade will be calculated as follows: <code>min{24, points}</code>.</b> Please make sure you follow the readme format <b>exactly</b>.
+      <p><strong>Academic Dishonesty:</strong> We will be checking your code against other submissions in the class for logical redundancy. If you copy someone else's code and submit it with minor changes, we will know. These cheat detectors are quite hard to fool, so please don't try. We trust you all to submit your own work only; <em>please</em> don't let us down. If you do, we will pursue the strongest consequences available to us.
+      <p><strong>Getting Help:</strong> You are probably not alone. Please post your questions via the <a href=https://moodle2.cs.huji.ac.il/nu17/mod/forum/view.php?id=4394">General Discussion Forum</a> on the <a href="http://www.cs.huji.ac.il/~ai"> course website</a>.
+         <strong>Please do not write to our personal e-mail addresses!</strong>
+      <p><strong>Readme format: </strong>Please submit a README.txt file. The README should include the
+         following lines (exactly):<br>
+      </p>
+      <ol>
+         <li>id1 --- student 1 id<br>
+         <li>id2 --- student 2 id</li>
+         <li>***** --- 5 stars denote end of i.d info.  </li>
+         <li>comments</li>
+      </ol>
+      For an example check out the <a href="README.txt"> README.txt</a> provided with your project. This
+      README will be read by a script, calling an autograder.
+      Note that if you decide to submit alone, please remove lines 2, i.e.<br>
+      <ol>
+         <li>id1 --- student 1 id<br>
+         <li>***** --- 5 stars denote end of i.d info.  </li>
+         <li>comments</li>
+      </ol>
+      </ol>
+      <p></p>
+      <h3> Welcome to Blokus </h3>
+      To run the game, you will need the python tkinter package. To install it, use your package manager. This package is already installed on the school computers.
+      Playing against an intelligent computer player will require an adversarial search agent, which we will learn about later in the course. For now, you can watch demo agents that choose moves randomly (implemented in inputs.py).
+      <pre>python3 game.py</pre>
+      <h4> Depth first search (2 points)</h4>
+      <p>Implement the depth-first search (DFS) algorithm in the <code>depth_first_search function</code> in <code><a href="docs/search.html">search.py</a></code>. To make your algorithm complete, write the graph search version of DFS, which avoids expanding any already visited states (textbook section 3.5). Your code should quickly find a solution for:</p>
+      <pre>python3 game.py -p tiny_set.txt -s 4 7 -z fill</pre>
+      <p>The game will output the board states on the way to the solution your search found, step by step. You will also get the number of search nodes expanded and the solution cost. Does your solution use all the moves that were checked?</p>
+      <p>Your code should be general and work with any search problem. For example, Pacman maze navigation:</p>
+      <pre>python3 pacman.py -a fn=dfs</pre>
+      <p><em>Hint:</em>  If you use a Stack as your data structure, the solution found by your DFS algorithm for second problem should have a cost of 130 (if you push successors onto the fringe in the order provided by getSuccessors; you might get 246 if you push them in the reverse order). Is this a least cost solution? If not, think about what depth-first search is doing wrong. </p>
+      <h4>Breadth first search (1 points)</h4>
+      <p>Implement the breadth-first search (BFS) algorithm in the <code>breadth_first_search</code> function in <code><a href="docs/search.html">search.py</a></code>. Again, write a graph search algorithm that avoids expanding any already visited states. Test your code the same way you did for depth-first search.</p>
+      <pre>python3 game.py -p tiny_set.txt -f bfs -s 4 7 -z fill</pre>
+      <pre>python3 pacman.py -a fn=bfs</pre>
+      <p>
+         Does BFS find the shortest path through pacman's maze? If not, check your implementation.
+      <p><em>Hint:</em>  BFS takes longer and more memory than DFS for these problems. Have patience - the search could take several minutes.
+      <p><em>Note:</em>  If you've written your search code generically, your code should work equally well for the eight-puzzle search problem (textbook section 3.2) without any changes.</p>
+      <pre>python3 eightpuzzle.py</pre>
+      <h3>Varying the cost function</h3>
+      <p>While BFS will find a fewest-actions path to the goal, we might want to find paths that are "best" in other senses. Consider a puzzle where we'd like to cover the corners of the board (introduced next): we would like a solution where the number of tiles placed is minimal, not just the number of moves. To do this, we will need to vary the cost function. </p>
+      <h4><code>BlokusCornersProblem</code> (2 points)</h4>
+      <p>
+         In <code>BlokusCornersProblem</code> (<code><a href="docs/blokus_problems.html">blokus_problems.py</a></code>), there are three locations to cover, one in each corner (other than the starting location). Our new search problem is to find the most efficient way through the board to cover all four corners.
+         Note that you may place a tile on the board only if it touches at least one piece with only corner-to-corner contact allowed; edges cannot touch!
+         The cost of an action in this search problem is the size of the tile. That is, we want to cover all the corners while leaving the board as vacant as possible.
+      </p>
+      <p>If you implemented the problem correctly, you should be able to run the following command:</p>
+      <pre>python3 game.py -p tiny_set_2.txt -f bfs -s 6 6 -z corners</pre>
+      <h4>Uniform cost search (2 points)</h4>
+      <p>Implement the uniform-cost graph search algorithm in the <code>uniform_cost_search</code> function in <code><a href="docs/search.html">search.py</a></code>. We encourage you to look through util.py for some data structures that may be useful in your implementation.
+         You should now be able to find the minimal solution for the following problems:
+      </p>
+      <pre>python3 game.py -p tiny_set_2.txt -f ucs -s 6 6 -z corners</pre>
+      <pre>python3 game.py -p small_set.txt -f ucs -s 5 5 -z corners</pre>
+      <p><em>Note:</em> The run time for the corners covering problems is very long. We can do better by choosing which moves to try first - see the next question. However, you can check that the solutions found have lower cost than the ones found by DFS and BFS. </p>
+      <h3>A* search (3 points)</h3>
+      <p>
+         Implement A* graph search in the empty function <code>a_star_search</code> in <code><a href="docs/search.html">search.py</a></code>. A* takes a heuristic function as an argument. Heuristics take two arguments: a state in the search problem (the main argument), and the problem itself (for reference information). The nullHeuristic heuristic function in <code><a href="docs/search.html">search.py</a></code> is a trivial example. Use it to test your A* search:
+      </p>
+      <pre>python3 game.py -p tiny_set_2.txt -f astar -s 6 6 -z corners -H null_heuristic</pre>
+      <h3>Writing heuristics</h3>
+      <p>The real power of A* will only be apparent with a more challenging search problem. Now, it's time to formulate new problems and design heuristics for it. You've already written <code>BlokusCornersProblem</code>- now write a heuristic for it:</p>
+      <h4>Blokus Corners Heuristic (4 points)</h4>
+      <p>
+         Implement a heuristic for the <code>BlokusCornersProblem</code> in <code>blokus_corners_heuristic</code> (<code><a href="docs/blokus_problems.html">blokus_problems.py</a></code>).
+         Grading: inadmissible heuristics will get no credit. 1 point for any admissible heuristic. 
+         The other 3 point will be awarded based on  how many nodes your heuristic expands. The top 40% submissions will receive full credit; the next 35% will get 3 points and the other submissions will be awarded with 2 points.
+      </p>
+      <pre>python3 game.py -p tiny_set_2.txt -f astar -s 8 8 -z corners -H blokus_corners_heuristic </pre>
+      <h3> Cover All Locations</h3>
+      <p>The next problem that you will define is <code>BlokusCoverProblem</code> in <code>blokus_problems.py</code>. This problem is similar to <code>BlokusCornersProblem</code>, while this time the goal is to cover all given locations (<code>targets</code> argument).
+         As before, your agent should find a solution that leaves  the board as vacant as possible.
+      </p>
+      <h4><code>BlokusCoverProblem</code> (2 points)</h4>
+      <p> Fill in the missing parts of  <code>BlokusCoverProblem</code> in <code>blokus_problems.py</code></p>
+      <pre>python3 game.py -p small_set.txt -f astar -s 6 6 -H null_heuristic -z cover -x 3 3 "[(2,2), (5, 5), (1, 4)]"</pre>
+      <h4>Blokus Cover Heuristic (6 points)</h4>
+      <p>
+         Implement a heuristic for the <code>BlokusCoverProblem</code> in <code>blokus_cover_heuristic</code>. Grading: inadmissible heuristics will get no credit. 1 point for any admissible heuristic, A consistency heuristic will get another one points.
+         The other 4 points will awarded based on the performance of your heuristic compared to your classmates.
+      </p>
+      <pre>python3 game.py -p small_set.txt -f astar -s 10 10 -H blokus_cover_heuristic -z cover -x 3 3 "[(2,2), (5, 5), (6, 7)]"</pre>
+      <h3>Suboptimal search</h3>
+      Sometimes, even with A* and a good heuristic, finding the optimal solution to a problem is hard. In these cases, we'd still like to find a reasonably good solution quickly. In this section you'll write an search problem that defines covering the closest point on the board as a sub-problem, and solves each sub-goal in turn (we will learn more about sub-goals later in the course when we reach planning).
+      <h4>Closest point (2 points)</h4>
+      <p>Implement the <code>ClosestLocationSearch</code> in <code><a href="docs/blokus_problems.html">blokus_problems.py</a></code>. That, is you should implemente the <code>solve</code> method in <code>ClosestLocationSearch</code>.
+         You may edit the class constructor  and add methods as you wish.
+      </p>
+      <pre>python3 game.py -p valid_pieces.txt -s 10 10 -z sub-optimal -x 7 7 "[(5,5), (8,8), (4,9)]"</pre>
+      <pre>python3 game.py -p valid_pieces.txt -s 10 10 -z sub-optimal -x 5 5 "[(3,4), (6,6), (7,5)]"</pre>
+      <p><em>Hint</em>:       Your <code>ClosestLocationSearch</code> won't always find the minimal tile solution (If you don't understand why, ask a GSI!) In fact, you can do better if you try.</p>
+      <p>
+         <em>Note:</em> Our program is able to solve these problems in under a ten seconds, expanding 21 nodes for the first and 23 nodes for the second (total nodes over all subgoal searches).
+         However, the cost of the solutions was 9, where a score of 6 is possible.
+      </p>
+      <h4> 
+         Mini Contest (2 points extra credit)
+      </h4>
+      <p>
+         Implement an <code>MiniContestSearch</code> in <code><a href="docs/blokus_problems.html">blokus_problems.py</a></code>,
+         that finds an  optimal solution. The two teams that find the optimal solution using no more than 30 seconds of computation will receive 2 extra credit points, the third and fourth teams will receive 1 extra point.
+      </p>
+      <pre>python3 game.py -p valid_pieces.txt -s 15 15 -z mini-contest "[(0,1),(0,9),(5,5), (8,8), (4,9),(9,2)]"</pre>
+	  
+      <p>
+         We will time your agent, and it must complete in under 30 seconds on the Aquarium's machines. Please describe what your agent is doing at the README file!
+         We reserve the right to give additional extra credit to creative solutions, even if they don't work that well or take more than 30 seconds.
+      <p>
+         Good Luck! 
+      </p>
+   </body>
+</html>
+

@@ -1,0 +1,152 @@
+<html>
+  <head>
+  <title>game_state.py</title>
+  </head>
+  <body>
+  <h3>game_state.py (<a href="../game_state.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>copy
+
+<span style="color: blue; font-weight: bold">import </span>numpy as np
+
+<span style="color: blue; font-weight: bold">from </span>game <span style="color: blue; font-weight: bold">import </span>Action<span style="font-weight: bold">, </span>OpponentAction
+
+DEFAULT_BOARD_SIZE <span style="font-weight: bold">= </span><span style="color: red">4
+
+
+</span><span style="color: blue; font-weight: bold">class </span>GameState<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>rows<span style="font-weight: bold">=</span>DEFAULT_BOARD_SIZE<span style="font-weight: bold">, </span>columns<span style="font-weight: bold">=</span>DEFAULT_BOARD_SIZE<span style="font-weight: bold">, </span>board<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, </span>score<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">, </span>done<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span>super<span style="font-weight: bold">(</span>GameState<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">).</span>__init__<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_done <span style="font-weight: bold">= </span>done
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>_score <span style="font-weight: bold">= </span>score
+        <span style="color: blue; font-weight: bold">if </span>board <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+            </span>board <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>zeros<span style="font-weight: bold">((</span>rows<span style="font-weight: bold">, </span>columns<span style="font-weight: bold">), </span>dtype<span style="font-weight: bold">=</span>np<span style="font-weight: bold">.</span>int32<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board <span style="font-weight: bold">= </span>board
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_rows<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_columns <span style="font-weight: bold">= </span>rows<span style="font-weight: bold">, </span>columns
+
+    @property
+    <span style="color: blue; font-weight: bold">def </span>done<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_done
+
+    @property
+    <span style="color: blue; font-weight: bold">def </span>score<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_score
+
+    @property
+    <span style="color: blue; font-weight: bold">def </span>max_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span>np<span style="font-weight: bold">.</span>max<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board<span style="font-weight: bold">)
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>board<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board
+
+    <span style="color: blue; font-weight: bold">def </span>get_legal_actions<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>agent_index<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">if </span>agent_index <span style="font-weight: bold">== </span><span style="color: red">0</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_agent_legal_actions<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">elif </span>agent_index <span style="font-weight: bold">== </span><span style="color: red">1</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_opponent_legal_actions<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">"illegal agent index."</span><span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_opponent_legal_actions<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>empty_tiles <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_empty_tiles<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">[</span>OpponentAction<span style="font-weight: bold">(</span>row<span style="font-weight: bold">=</span>empty_tiles<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">][</span>tile_index<span style="font-weight: bold">], </span>column<span style="font-weight: bold">=</span>empty_tiles<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">][</span>tile_index<span style="font-weight: bold">], </span>value<span style="font-weight: bold">=</span>value<span style="font-weight: bold">)
+                </span><span style="color: blue; font-weight: bold">for </span>tile_index <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>empty_tiles<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">].</span>size<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">for </span>value <span style="color: blue; font-weight: bold">in </span><span style="font-weight: bold">[</span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">4</span><span style="font-weight: bold">]]
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_agent_legal_actions<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>legal_actions <span style="font-weight: bold">= []
+        </span>left_board <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_get_rotated_board_view<span style="font-weight: bold">(</span>Action<span style="font-weight: bold">.</span>LEFT<span style="font-weight: bold">)
+        </span>up_board <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_get_rotated_board_view<span style="font-weight: bold">(</span>Action<span style="font-weight: bold">.</span>UP<span style="font-weight: bold">)
+        </span>down_board <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_get_rotated_board_view<span style="font-weight: bold">(</span>Action<span style="font-weight: bold">.</span>DOWN<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_is_right_legal_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board<span style="font-weight: bold">):
+            </span>legal_actions <span style="font-weight: bold">+= [</span>Action<span style="font-weight: bold">.</span>RIGHT<span style="font-weight: bold">]
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_is_right_legal_action<span style="font-weight: bold">(</span>left_board<span style="font-weight: bold">):
+            </span>legal_actions <span style="font-weight: bold">+= [</span>Action<span style="font-weight: bold">.</span>LEFT<span style="font-weight: bold">]
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_is_right_legal_action<span style="font-weight: bold">(</span>up_board<span style="font-weight: bold">):
+            </span>legal_actions <span style="font-weight: bold">+= [</span>Action<span style="font-weight: bold">.</span>UP<span style="font-weight: bold">]
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_is_right_legal_action<span style="font-weight: bold">(</span>down_board<span style="font-weight: bold">):
+            </span>legal_actions <span style="font-weight: bold">+= [</span>Action<span style="font-weight: bold">.</span>DOWN<span style="font-weight: bold">]
+        </span><span style="color: blue; font-weight: bold">return </span>legal_actions
+
+    <span style="color: blue; font-weight: bold">def </span>_is_right_legal_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">):
+        </span>has_tile <span style="font-weight: bold">= </span>board<span style="font-weight: bold">[:, </span><span style="color: red">0</span><span style="font-weight: bold">:</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">] != </span><span style="color: red">0
+        </span>ok_to_move <span style="font-weight: bold">= </span>board<span style="font-weight: bold">[:, </span><span style="color: red">1</span><span style="font-weight: bold">:</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_rows<span style="font-weight: bold">] == </span><span style="color: red">0
+        </span><span style="color: blue; font-weight: bold">if </span>np<span style="font-weight: bold">.</span>any<span style="font-weight: bold">(</span>np<span style="font-weight: bold">.</span>logical_and<span style="font-weight: bold">(</span>has_tile<span style="font-weight: bold">, </span>ok_to_move<span style="font-weight: bold">)):
+            </span><span style="color: blue; font-weight: bold">return True
+        </span>diff <span style="font-weight: bold">= </span>board<span style="font-weight: bold">[:, </span><span style="color: red">1</span><span style="font-weight: bold">:</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_rows<span style="font-weight: bold">] - </span>board<span style="font-weight: bold">[:, </span><span style="color: red">0</span><span style="font-weight: bold">:</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">]
+        </span><span style="color: blue; font-weight: bold">return </span>np<span style="font-weight: bold">.</span>any<span style="font-weight: bold">(</span>np<span style="font-weight: bold">.</span>logical_and<span style="font-weight: bold">(</span>has_tile<span style="font-weight: bold">, </span>diff <span style="font-weight: bold">== </span><span style="color: red">0</span><span style="font-weight: bold">))
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_empty_tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span>np<span style="font-weight: bold">.</span>where<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board <span style="font-weight: bold">== </span><span style="color: red">0</span><span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>apply_opponent_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>action<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board<span style="font-weight: bold">[</span>action<span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span>action<span style="font-weight: bold">.</span>column<span style="font-weight: bold">] != </span><span style="color: red">0</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">"illegal opponent action (%s,%s) isn't empty." </span><span style="font-weight: bold">% (</span>action<span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span>action<span style="font-weight: bold">.</span>column<span style="font-weight: bold">))
+        </span><span style="color: blue; font-weight: bold">if </span>action<span style="font-weight: bold">.</span>value <span style="font-weight: bold">&lt;= </span><span style="color: red">0</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">"The action value must be positive integer."</span><span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board<span style="font-weight: bold">[</span>action<span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span>action<span style="font-weight: bold">.</span>column<span style="font-weight: bold">] = </span>action<span style="font-weight: bold">.</span>value
+        <span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_agent_legal_actions<span style="font-weight: bold">():
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_done <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+    def </span>apply_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>action<span style="font-weight: bold">):
+        </span>rotated_board <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_get_rotated_board_view<span style="font-weight: bold">(</span>action<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_is_right_legal_action<span style="font-weight: bold">(</span>rotated_board<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">"illegal action."</span><span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">for </span>row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_rows<span style="font-weight: bold">):
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_fuse_tiles_in_row<span style="font-weight: bold">(</span>rotated_board<span style="font-weight: bold">, </span>row<span style="font-weight: bold">)
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_move_tiles_in_row<span style="font-weight: bold">(</span>rotated_board<span style="font-weight: bold">, </span>row<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>generate_successor<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>agent_index<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">, </span>action<span style="font-weight: bold">=</span>Action<span style="font-weight: bold">.</span>STOP<span style="font-weight: bold">):
+        </span>successor <span style="font-weight: bold">= </span>GameState<span style="font-weight: bold">(</span>rows<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_rows<span style="font-weight: bold">, </span>columns<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_columns<span style="font-weight: bold">, </span>board<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">(),
+                              </span>score<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>score<span style="font-weight: bold">, </span>done<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_done<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">if </span>agent_index <span style="font-weight: bold">== </span><span style="color: red">0</span><span style="font-weight: bold">:
+            </span>successor<span style="font-weight: bold">.</span>apply_action<span style="font-weight: bold">(</span>action<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">elif </span>agent_index <span style="font-weight: bold">== </span><span style="color: red">1</span><span style="font-weight: bold">:
+            </span>successor<span style="font-weight: bold">.</span>apply_opponent_action<span style="font-weight: bold">(</span>action<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">"illegal agent index."</span><span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">return </span>successor
+
+    <span style="color: blue; font-weight: bold">def </span>_get_rotated_board_view<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>action<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Return rotated view such that the action is RIGHT.
+        """
+        </span>rotated_board <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_board
+        <span style="color: blue; font-weight: bold">if </span>action <span style="font-weight: bold">== </span>Action<span style="font-weight: bold">.</span>UP <span style="color: blue; font-weight: bold">or </span>action <span style="font-weight: bold">== </span>Action<span style="font-weight: bold">.</span>DOWN<span style="font-weight: bold">:
+            </span>rotated_board <span style="font-weight: bold">= </span>rotated_board<span style="font-weight: bold">.</span>transpose<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">if </span>action <span style="font-weight: bold">== </span>Action<span style="font-weight: bold">.</span>LEFT <span style="color: blue; font-weight: bold">or </span>action <span style="font-weight: bold">== </span>Action<span style="font-weight: bold">.</span>UP<span style="font-weight: bold">:
+            </span>rotated_board <span style="font-weight: bold">= </span>rotated_board<span style="font-weight: bold">[:, -</span><span style="color: red">1</span><span style="font-weight: bold">::-</span><span style="color: red">1</span><span style="font-weight: bold">]
+        </span><span style="color: blue; font-weight: bold">return </span>rotated_board
+
+    <span style="color: blue; font-weight: bold">def </span>_move_tiles_in_row<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">, </span>row<span style="font-weight: bold">):
+        </span>to_move <span style="font-weight: bold">= </span><span style="color: blue">None
+        </span><span style="color: blue; font-weight: bold">for </span>col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+            </span>current_tile_empty <span style="font-weight: bold">= </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">] == </span><span style="color: red">0
+            </span><span style="color: blue; font-weight: bold">if </span>to_move <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None </span><span style="color: blue; font-weight: bold">and </span>current_tile_empty<span style="font-weight: bold">:
+                </span>to_move <span style="font-weight: bold">= </span>col
+            <span style="color: blue; font-weight: bold">if </span>to_move <span style="color: blue; font-weight: bold">is not </span><span style="color: blue">None </span><span style="color: blue; font-weight: bold">and not </span>current_tile_empty<span style="font-weight: bold">:
+                </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>to_move<span style="font-weight: bold">] = </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">]
+                </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">] = </span><span style="color: red">0
+                </span>to_move <span style="font-weight: bold">-= </span><span style="color: red">1
+
+    </span><span style="color: blue; font-weight: bold">def </span>_fuse_tiles_in_row<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">, </span>row<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">for </span>col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_num_of_columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">if </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">] == </span><span style="color: red">0</span><span style="font-weight: bold">:
+                </span><span style="color: blue; font-weight: bold">continue
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_fuse_tile<span style="font-weight: bold">(</span>board<span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>_fuse_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">for </span>prev_col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>col <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">if </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>prev_col<span style="font-weight: bold">] == </span><span style="color: red">0</span><span style="font-weight: bold">:
+                </span><span style="color: blue; font-weight: bold">continue
+            if </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">] == </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>prev_col<span style="font-weight: bold">]:
+                </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">] += </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>prev_col<span style="font-weight: bold">]
+                </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>prev_col<span style="font-weight: bold">] = </span><span style="color: red">0
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_score <span style="font-weight: bold">+= </span>board<span style="font-weight: bold">[</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">]
+            </span><span style="color: blue; font-weight: bold">return
+</span>
+  </pre>
+  </body>
+  </html>
+  

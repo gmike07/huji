@@ -1,0 +1,22 @@
+[
+  {
+    "type": "baseball bat",
+    "volume": 2
+  },
+  {
+    "type": "helmet, size 1",
+    "volume": 3
+  },
+  {
+    "type": "helmet, size 3",
+    "volume": 5
+  },
+  {
+    "type": "spores engine",
+    "volume": 10
+  },
+  {
+    "type": "football",
+    "volume": 4
+  }
+]

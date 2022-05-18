@@ -1,0 +1,34 @@
+mikeg
+
+
+=============================
+=      File description     =
+=============================
+Book.java - This class represents a book, which has a title, author, year of publication and different
+literary aspects.
+Patron.java - This class represents a patron that has a first name, a last name, tendencies for comic,
+dramatic and educational values, and an enjoyment threshold.
+Library.java - This class represents a library, which hold a collection of books. Patrons can register at the
+library to be able to check out books, if a copy of the requested book is available.
+
+
+
+=============================
+=          Design           =
+=============================
+I just followed the API as instructed, added only 4 more methods. 3 getters in the book class and a function
+to calculate the number of borrowed books of a patron
+
+
+
+=============================
+=  Implementation details   =
+=============================
+I chose arrays because the pdf taught that and because the size was given from the beginning, else I
+would have chosen hashtable
+
+
+
+=============================
+=    Answers to questions   =
+=============================

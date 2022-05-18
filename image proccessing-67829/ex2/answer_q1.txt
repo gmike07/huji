@@ -1,0 +1,6 @@
+the 2 audios sound a bit differnt. the reason for the difference is that the
+first one just accelerates the speed in which the samples are played (faster, 
+slower) which makes it harder to perceive all of the audio. while the second one,
+changes the amount of samples that will be played all together, therefore the
+second one sounds a bit better because we are used as humans to a certain amount 
+of samples per second.

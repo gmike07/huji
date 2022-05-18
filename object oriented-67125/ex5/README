@@ -1,0 +1,63 @@
+mikeg
+
+
+
+=============================
+=      File description     =
+=============================
+
+directory errorTypes:
+TypeOneError.java - an error class to represent type 1 error
+TypeTwoError.java - an error class to represent type 2 error
+
+directory filesproccesing:
+DirectoryProcessor.java - the main class to run the program from
+Parser.java - parses the data, check that it is valid, else throws typ2error, and create sections
+Section.java - holds the instruction of a section and the lines in which the section appears
+HelperFunctions.java - has a lot of static functions that are used a lot
+
+directory filter:
+Filter.java - an abstract class to represent a filter
+AllFilter.java - a class to represent all filter (extends Filter)
+NameFilter.java - a class to represent name filter (extends Filter)
+SizeFilter.java - a class to represent size filter (extends Filter)
+PropertyFilter.java - a class to represent property filter (extends Filter)
+NotFilter.java - a decorator of filter to apply not if needed
+FilterManager.java - handles calling the correct filter
+
+directory order:
+Order.java - an abstract class to represent an order
+AbsOrder.java - a class to represent abs order (extends Order)
+SizeOrder.java - a class to represent size order (extends Order)
+TypeOrder.java - a class to represent type order (extends Order)
+ReverseOrder.java - a decorator of order to apply reverse if needed
+OrderManager.java - handles calling the correct order and has the sorting functions
+
+=============================
+=          Design           =
+=============================
+First I decided to create the 2 error types to handle each of them in different ways.
+Then, in the InstructionInterpreter, I check each Type2Error and throw it if it happens and catch it in the
+main, meanwhile creating sections in case the input was fine.
+Afterwards, we know there is no type 2 error, so we can start compiling sections.
+Then, we run on each section, filter it through the filter manager, then order through the order class and
+print the sorted data.
+
+I chose to use lambda expressions because most of the code is the same up to the lambda itself.
+In filtering, I chose to create an abstract class that has methods that all the filtering subclasses use.
+Furthermore, I chose to create a not decorator to handle not easily (as you suggested).
+The filter has 2 functions: is this filter should be applied and filter the data.
+
+I chose not to use hierarchy in exceptions, the types have string constructors that explain the type of error
+that occurred. this is a better approach in my mind because we meet each exception only once and for debugging
+it is easier to have them all different by their string.
+
+In ordering, I used merge sort and lambdas. In merge sort I chose to use arrays because we already saw the
+algorithm in dast and it is easy to implement, it is efficient because we don't have assumptions on input
+therefore sorting will be at least n * log(n), that this algorithm achieves.
+
+In ordering, I chose to do the same as in filter, because it is fits the encapsulation idea and is easily
+extended, and much easier to debug.
+
+I chose to put the errors, filters, orders in different packages because it is easier to read and easier to
+debug, and gives an ability to use protected as part of the encapsulation.

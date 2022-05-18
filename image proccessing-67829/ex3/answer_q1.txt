@@ -1,0 +1,4 @@
+the coeff's let us control the intensity of the laplacian pyramid, therefore by
+changing the values from 1 to different ones, we give different weights to the
+different layers of the laplacian, which in turn will sharpen \ blur certain
+parts of the image.

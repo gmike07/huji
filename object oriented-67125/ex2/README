@@ -1,0 +1,59 @@
+mikeg
+
+
+=============================
+=      File description     =
+=============================
+AggressiveSpaceShip.java - This class represents an aggressive space ship, which extends the class SpaceShip
+and overrides the doAction function
+BasherSpaceShip.java - This class represents a basher space ship, which extends the class SpaceShip and
+overrides the doAction function
+DrunkardSpaceShip.java - This class represents a drunkard space ship, which extends the class SpaceShip and
+overrides the doAction function
+HumanSpaceShip.java - This class represents a human space ship, which extends the class SpaceShip and
+overrides the doAction function and getImage function
+RunnerSpaceShip.java - This class represents a runner space ship, which extends the class SpaceShip and
+overrides the doAction function
+SpaceShip.java - This class represents a space ship with all the function that were required.
+SpaceShipFactory.java - This class represents a space ship factory, has methods to produce ship arrays from
+string arrays, via the createSpaceShips function
+SpecialSpaceShip.java - This class represents a special space ship, which extends the class SpaceShip and
+overrides the doAction function, gotHit function
+
+
+=============================
+=          Design           =
+=============================
+I decided to create SpaceShip as a class that all Ship will extend because it has a lot of useful function
+that all the extending ships must have due to the API. Therfore, I decided to implement all the functions in
+SpaceShip so that none of the other ships will have to implement them.
+
+Drunkard just has a random chance to teleport, shoot, shield and move in a direction he chooses (all chances
+are numbers chosen by me for him to look kinda drunk and not too OP)
+
+Special had 2 phases. in the first phase, he just acts as a combination of a basher and aggressive. in the
+second phase, he has 2 abilities. teh first is to shoot a TON of bullet in all directions, and a break so the
+player could kill him. In the break, he just stands in the place, shoots and puts up a shield sometimes. In
+this phase, the ship is invulnerable to bullets.
+
+
+=============================
+=  Implementation details   =
+=============================
+In SpaceShip, in getImage I decided to return the enemy image because all classes that extend it, except one
+are enemies.
+Additionally, in SpaceShip, in the doAction, I decided to update the energy and shooting delay so the
+extending classes wouldn't have to worry about it, just call super.doAction in the end of the function.
+I added a number of function in SpaceShip as protected, they are only for the special space ship, and some
+function that reuse code that appeared a lot in the ships: angle to closest ship, closest ship, turn off
+shield, and to which direction to turn for each angle.
+
+
+In SpecialSpaceShip, I overwrote the function gotHit, so the ship wouldn't get hit in the second phase by
+bullets. This was done in order to stop the ship from dying all the time from it's own bullets. Furthermore, I
+added option to shoot bullets for free, to allow the ship to shoot many bullet even without having the energy
+requirements.
+
+=============================
+=    Answers to questions   =
+=============================

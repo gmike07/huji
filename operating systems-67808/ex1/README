@@ -1,0 +1,47 @@
+mikeg, meitar
+Mike Greenbaum (211747639), Meitar Sela (322396243)
+EX: 1
+
+FILES:
+osm.cpp -- a file that has the implementation of the osm library
+osm.h -- a file that has the declarations of the osm library
+Makefile -- implement the make operation
+graph.png -- shows the results of the library
+README -- this file :)
+
+REMARKS:
+These are some remarks that
+I want the graders to know
+about this submission.
+
+ANSWERS:
+
+
+Assignment 1:
+Steps we did to figure out what the program does:
+-Run the command chmod +x ./WhatIDo to make the
+ program executable.
+-Run the command ./WhatIDo and get the output
+ “The program should receive an argument”.
+-Run the command ./WhatIDo input and get no output.
+-Run the command strace ./WhatIDo input
+ and get a description of what the program does.
+-Run the command strace -s 500 ./WhatIDo input
+and get full description of what the program does.
+
+
+The program executes:
+if there is no input it prints enter an input and exits
+else:
+-Open a directory called “Welcome”
+-Inside it, open a directory called “To”
+-Inside it, open a file “OS2020”
+-Write to it “%s\nIf you haven't read the course
+guidelines yet --- do it right now!\n%s”,
+when the first string is the username of the host
+and the second one is the input argument.
+-Close the file
+-Delete the file
+-Delete the directory “To”
+-Delete the directory “Welcome”
+-Exit with 0

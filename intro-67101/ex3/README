@@ -1,0 +1,40 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex3:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 3 files:
+
+README - this file
+ex3.py - contains a vast amount of utility functions to work with lists
+check_maximum.py - check that the function maximum in ex3 works correctly
+
+
+======================
+=  Special Comments  =
+======================
+in check_maximum:
+the first check checks whether the function works with an empty list
+the second check checks if the function works correctly with decimal places
+the third check checks if the function works correctly with diffrent types of number
+the fourth checks if the function works correctly with negative numbers
+the fifth checks if the function works correctly with negative numbers, positive ones, and form diffrent types
+
+PART 5:
+cyclic(123 ,321) - the inputs will throw an error because it checks length which is underfined for int type
+maximum([-3, -2, -1]) - the function will return  -1 because the inputs are valid and the function doesn't assume the input to be positive
+maximum([1, 10, 100, 'intro']) - the inputs will throw an error because the function can't check greater than for diffrent types int and str
+histogram(3, [1,2,3,4]) - the function will return [0,1,1] because the function create a list only in length 3 therefore 3,4 are ignored and dicounted in the list
+prime_factors(0) - the function will return [] because the function checks if the input is less than 2, if so it returns an empty list
+pairs([0,0,1,1,2,2], 2) - the function will return  [[0, 2], [0, 2], [0, 2], [0, 2], [1, 1]] because the inputs are valid and
+    because the function returns any combination of 2 diffrent elements that meet the requirements
+
+

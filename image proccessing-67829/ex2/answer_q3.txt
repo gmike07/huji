@@ -1,0 +1,7 @@
+the 2 magnitudes are a bit different because both of them try to approximate
+the same picture in different ways. Because they both are approximations they
+agree only on the most important details but the little differences  that are
+done by the algorithms make them have different answers. The fourier is more
+precise by a little bit. the conv dir is just taking the difference for
+epsilon=1, while the fourier dir is assuming that the picture is continuous when
+it is. Those little problems bring the differences in the pictures.

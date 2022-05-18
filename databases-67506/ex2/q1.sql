@@ -1,0 +1,4 @@
+SELECT DISTINCT pid
+FROM Visit
+WHERE Visit.vdate = '11-11-1111'
+ORDER BY pid ASC;

@@ -1,0 +1,16 @@
+denoising:
+
+As can be seen in the task, at first the loss of the validation goes down and in the end it goes back up.
+I think there might be 2 reasons for the loss to go up:
+1. The first reason for the loss going back up is that the task was rather simple, so with 5 blocks the network
+    might have started over fitting which resulted in the validation loss going up in the end.
+2. The second reason for the loss going back up is that there are many weights in the network and the training was
+    rather short, so it might be that the model didn't have enough time to study the correct weights and biases
+    in order for the model to preform well.
+
+
+deblurring:
+
+As can be seen in the task, the model improves the more blocks we add to it, the reason for it being that the task is
+hard to learn. Therefore, the more blocks we add, the network will be able  to understand the problem more and solve it
+better, and due to the task being hard, the model doesn't over fit in the tests I have done.

@@ -1,0 +1,90 @@
+<html>
+  <head>
+  <title>game.py</title>
+  </head>
+  <body>
+  <h3>game.py (<a href="../game.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>abc
+<span style="color: blue; font-weight: bold">from </span>collections <span style="color: blue; font-weight: bold">import </span>namedtuple
+<span style="color: blue; font-weight: bold">from </span>enum <span style="color: blue; font-weight: bold">import </span>Enum
+
+<span style="color: blue; font-weight: bold">import </span>numpy as np
+<span style="color: blue; font-weight: bold">import </span>time
+
+
+<span style="color: blue; font-weight: bold">class </span>Action<span style="font-weight: bold">(</span>Enum<span style="font-weight: bold">):
+    </span>UP <span style="font-weight: bold">= </span><span style="color: red">1
+    </span>DOWN <span style="font-weight: bold">= </span><span style="color: red">2
+    </span>LEFT <span style="font-weight: bold">= </span><span style="color: red">3
+    </span>RIGHT <span style="font-weight: bold">= </span><span style="color: red">4
+    </span>STOP <span style="font-weight: bold">= </span><span style="color: red">5
+
+
+</span>OpponentAction <span style="font-weight: bold">= </span>namedtuple<span style="font-weight: bold">(</span><span style="color: red">'OpponentAction'</span><span style="font-weight: bold">, [</span><span style="color: red">'row'</span><span style="font-weight: bold">, </span><span style="color: red">'column'</span><span style="font-weight: bold">, </span><span style="color: red">'value'</span><span style="font-weight: bold">])
+
+
+</span><span style="color: blue; font-weight: bold">class </span>Agent<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>super<span style="font-weight: bold">(</span>Agent<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">).</span>__init__<span style="font-weight: bold">()
+
+    </span>@abc<span style="font-weight: bold">.</span>abstractmethod
+    <span style="color: blue; font-weight: bold">def </span>get_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>game_state<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return
+
+    def </span>stop_running<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">pass
+
+
+class </span>RandomOpponentAgent<span style="font-weight: bold">(</span>Agent<span style="font-weight: bold">):
+    </span>FOUR_VS_TWO_PROB <span style="font-weight: bold">= </span><span style="color: red">0.1
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>game_state<span style="font-weight: bold">):
+        </span>empty_tiles <span style="font-weight: bold">= </span>game_state<span style="font-weight: bold">.</span>get_empty_tiles<span style="font-weight: bold">()
+        </span>tile_index <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>random<span style="font-weight: bold">.</span>choice<span style="font-weight: bold">(</span>empty_tiles<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">].</span>size<span style="font-weight: bold">)
+        </span>value <span style="font-weight: bold">= </span><span style="color: red">2
+        </span><span style="color: blue; font-weight: bold">if </span>np<span style="font-weight: bold">.</span>random<span style="font-weight: bold">.</span>uniform<span style="font-weight: bold">() &lt;= </span>RandomOpponentAgent<span style="font-weight: bold">.</span>FOUR_VS_TWO_PROB<span style="font-weight: bold">:
+            </span>value <span style="font-weight: bold">= </span><span style="color: red">4
+        </span><span style="color: blue; font-weight: bold">return </span>OpponentAction<span style="font-weight: bold">(</span>row<span style="font-weight: bold">=</span>empty_tiles<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">][</span>tile_index<span style="font-weight: bold">], </span>column<span style="font-weight: bold">=</span>empty_tiles<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">][</span>tile_index<span style="font-weight: bold">], </span>value<span style="font-weight: bold">=</span>value<span style="font-weight: bold">)
+
+
+</span><span style="color: blue; font-weight: bold">class </span>Game<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>agent<span style="font-weight: bold">, </span>opponent_agent<span style="font-weight: bold">, </span>display<span style="font-weight: bold">, </span>sleep_between_actions<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span>super<span style="font-weight: bold">(</span>Game<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">).</span>__init__<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>sleep_between_actions <span style="font-weight: bold">= </span>sleep_between_actions
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>agent <span style="font-weight: bold">= </span>agent
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>display <span style="font-weight: bold">= </span>display
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>opponent_agent <span style="font-weight: bold">= </span>opponent_agent
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>_state <span style="font-weight: bold">= </span><span style="color: blue">None
+        self</span><span style="font-weight: bold">.</span>_should_quit <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+    def </span>run<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>initial_state<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_quit <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state <span style="font-weight: bold">= </span>initial_state
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>display<span style="font-weight: bold">.</span>initialize<span style="font-weight: bold">(</span>initial_state<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_game_loop<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>quit<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_quit <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>agent<span style="font-weight: bold">.</span>stop_running<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>opponent_agent<span style="font-weight: bold">.</span>stop_running<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>_game_loop<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">while not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">.</span>done <span style="color: blue; font-weight: bold">and not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_quit<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>sleep_between_actions<span style="font-weight: bold">:
+                </span>time<span style="font-weight: bold">.</span>sleep<span style="font-weight: bold">(</span><span style="color: red">1</span><span style="font-weight: bold">)
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>display<span style="font-weight: bold">.</span>mainloop_iteration<span style="font-weight: bold">()
+            </span>action <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>agent<span style="font-weight: bold">.</span>get_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">)
+            </span><span style="color: blue; font-weight: bold">if </span>action <span style="font-weight: bold">== </span>Action<span style="font-weight: bold">.</span>STOP<span style="font-weight: bold">:
+                </span><span style="color: blue; font-weight: bold">return
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">.</span>apply_action<span style="font-weight: bold">(</span>action<span style="font-weight: bold">)
+            </span>opponent_action <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>opponent_agent<span style="font-weight: bold">.</span>get_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">)
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">.</span>apply_opponent_action<span style="font-weight: bold">(</span>opponent_action<span style="font-weight: bold">)
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>display<span style="font-weight: bold">.</span>update_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">, </span>action<span style="font-weight: bold">, </span>opponent_action<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">.</span>score<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_state<span style="font-weight: bold">.</span>max_tile
+
+  </pre>
+  </body>
+  </html>
+  

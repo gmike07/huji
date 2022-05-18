@@ -1,0 +1,45 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex1:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 3 files:
+
+README - this file
+hangman.py - a file that handles the logic of the hangman gui
+check_update_word_pattern.py - a file that debugs the update_word_pattern
+            function in hangman.py
+
+======================
+=  Special Comments  =
+======================
+
+check_update_word_pattern:
+
+the first check tests if the function can
+        access all indexes correctly (the first and last)
+the second check test if the function doesn't
+        change the pattern when it shouldn't
+the third check test if the function changes only
+        the correct index that meet the requirements
+the fourth check test if the function changes
+        the correct indexes that meet the requirements
+        when there is more than 1 and not everyone is the same letter
+
+ANSWER TO QUESTIONS:
+
+in order to play the game in hebrew, all that needs to
+       be changed is the LETTERS list to hebrew list
+        and ORD_A to be the ord of א instead of a because
+        it is the first hebrew letter.
+and for the game to work correctly, the words.txt
+        should be changed to contain hebrew
+        words but it isn't part of the code itself.

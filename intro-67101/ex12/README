@@ -1,0 +1,31 @@
+mikeg,alonzo
+211747639, 322337502
+Mike Greenbaum, Alon Blyachman
+
+
+I discussed the exercise with:
+=============================
+=  README for ex12:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 3 files:
+
+README - this file
+AUTHORS - a file that contains the authors of the project
+four_in_a_row.py - a file that handles the game, contains 3 classes,
+    GUI - handles the gui of the game
+    MENU_GUI - handles the gui of the main menu
+    HANDLER_GAME - handles a move in a game and updates the gui
+in directory ex12
+    ai.py - a file that handles an ai that plays the game (AI class)
+    game.py - a file that handles the game logic (Game class)
+    board.py - a file that handles the board of the game (Board class)
+    cell.png - a picture of a cell in the game
+
+======================
+=  Special Comments  =
+======================

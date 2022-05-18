@@ -1,0 +1,19 @@
+idea1:
+
+corruption function:
+    it chooses randomly a kernel and down samples the current patch with the
+    given filter. this is a down scale of the original image with blurring
+    which the model gets as an input.
+restore image:
+    gets a down scaled patch, does everything the same but at the end expands
+    it as we have seen in pyramids by adding 0 padding between each 2 elements
+    and then doing a convolution.
+
+idea2:
+
+corruption function:
+    it chooses randomly a kernel and down samples the current patch with the
+    given filter and then upsamples back! this blurs the image.
+restore image:
+    the restore image doesn't change in this case because it does get the
+    correct size to try and improve the resolution upon.

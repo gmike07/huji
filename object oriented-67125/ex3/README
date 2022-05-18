@@ -1,0 +1,67 @@
+mikeg
+
+
+=============================
+=      File description     =
+=============================
+
+BoopingSite.java - contains the BoopingSite class, which has sorting functions for hotels
+BoopingSiteTest.java - contains the BoopingSiteTest class, which has functions to check the BoopingSite class.
+
+Locker.java - contains the Locker class, which has functions to add, remove and see the locker.
+LockerTest.java - contains the LockerTest class, which has functions to check the Locker class.
+
+LongTermStorage.java - contains the LongTermStorage class, which has functions to add and see the storage.
+LongTermTest.java - contains the LongTermTest class, which has functions to check the LongTermStorage class.
+
+SpaceshipDepositoryTest.java - a test suite for the classes Locker, LongTermStorage.
+
+=============================
+=          Design           =
+=============================
+
+In the Testers for classes Locker, Storage, I chose to create one big test that I think covers all edge cases.
+ Then I check every function for that one big test, if it worked as intended.
+
+In the classes Locker, Storage I chose Map to save the data because we are required to return a map in one of
+the functions. I chose not to do this through Extends because it doesn't really makes sense that the Locker
+would Extend the Storage, and it is a little code duplication. Furthermore, I chose to implement the Storage
+as static property of Locker so all lockers would have the same Storage.
+
+SpaceshipDepositoryTest was almost copy paste from Tirgul that implemented a test suite.
+
+In the Tester BoopingSite, I checked the array is sorted in the needed way by comparing every element to the
+next one.
+
+In the class BoopingSite, for sorting i created functions that return me a comparator that has the required
+sorting for that part of the exercise.
+
+=============================
+=  Implementation details   =
+=============================
+
+As I said in the design, in the Testers for classes Locker, Storage, I chose to create one big test that I
+think covers all edge cases. To recheck the same test again and again I added a before method that resets the
+Long Term Storage. i.e. :removing negative, too much and a correct amount, adding to locker 0, too much, more
+than 50% (checking the storage full or not), football and baseball.
+
+In the classes Locker, Storage most of the functions in the classes are straight forward followed by the API.
+I separated them to a lot of little easy private functions to check and implement (encapsulation idea). I
+extended the Locker protected  API in order to check the Storage in the tests. To add the football baseball
+"bonus", i just checked if the type is one of them, if the locker has one of them and not the type we try to
+add, which fits the requirement.
+
+
+In the Tester BoopingSite, I checked the array is sorted in the needed way by comparing every element to the
+next one. In the methods that can return an empty Array, I checked that case too.
+
+In the class BoopingSite, I stored the Hotel array in the constructor. For sorting i created functions that
+return me a comparator that has the required sorting for that part of the exercise. I chose comparator over
+comparable because comparable is between the object and another one, which required to create a new object
+that his entire functionality is for a sort. this is confusing and place wasting, which I used in Arrays.sort
+to sort the data. I implemented a function that gives me the hotels in a city because this requirement appears
+ more that once in the exercise.
+
+=============================
+=    Answers to questions   =
+=============================

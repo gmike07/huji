@@ -1,0 +1,22 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex9:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 3 files:
+
+game.py - a class that contains the main and handles the game
+board.py - a class that handles the board of the game (and the cars it contains)
+car.py - a class that handles the car object and its logic
+
+======================
+=  Special Comments  =
+======================

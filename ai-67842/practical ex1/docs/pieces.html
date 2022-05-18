@@ -1,0 +1,211 @@
+<html>
+  <head>
+  <title>pieces.py</title>
+  </head>
+  <body>
+  <h3>pieces.py (<a href="../pieces.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>os
+
+<span style="color: darkred">"""
+Classes and utilities to describe all of the game pieces.
+"""
+
+
+</span><span style="color: blue; font-weight: bold">def </span>negate_list_positive<span style="font-weight: bold">(</span>lst<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    Helper function: negate every item in a list
+    """
+    </span>new_list <span style="font-weight: bold">= [-</span>x <span style="color: blue; font-weight: bold">for </span>x <span style="color: blue; font-weight: bold">in </span>lst<span style="font-weight: bold">]
+    </span>list_min <span style="font-weight: bold">= </span>min<span style="font-weight: bold">(</span>new_list<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">[</span>x <span style="font-weight: bold">- </span>list_min <span style="color: blue; font-weight: bold">for </span>x <span style="color: blue; font-weight: bold">in </span>new_list<span style="font-weight: bold">]
+
+
+</span><span style="color: blue; font-weight: bold">class </span>Piece<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    A piece is a collection of tiles with various (x,y) offsets.
+
+    Variables:
+    - x: Lists of x coordinates of the piece
+    - y: Lists of y coordinates of the piece
+
+    x and y each have 8 elements, which are:
+    x/y[0]: Initial orientation
+    x/y[1]: Rotated CW once
+    x/y[2]: Rotated CW twice
+    x/y[3]: Rotated CW three times
+    x/y[k+4]: x/y[k] flipped horizontally
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>x_list<span style="font-weight: bold">, </span>y_list<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">if </span>len<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">) != </span>len<span style="font-weight: bold">(</span>y_list<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">raise </span>ValueError<span style="font-weight: bold">(
+                </span><span style="color: red">"Length of x and y lists are unequal (%d and %d)" </span><span style="font-weight: bold">% (</span>len<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">), </span>len<span style="font-weight: bold">(</span>y_list<span style="font-weight: bold">)))
+        </span><span style="color: blue; font-weight: bold">if </span>len<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">) == </span><span style="color: red">0</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>ValueError<span style="font-weight: bold">(</span><span style="color: red">"No tiles provided!"</span><span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">if </span>len<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">) &gt; </span><span style="color: red">5</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>ValueError<span style="font-weight: bold">(</span><span style="color: red">"%d tiles provided; maximum 5" </span><span style="font-weight: bold">% </span>len<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">))
+
+        </span>minx <span style="font-weight: bold">= </span>min<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">)
+        </span>miny <span style="font-weight: bold">= </span>min<span style="font-weight: bold">(</span>y_list<span style="font-weight: bold">)
+
+        </span>x_list <span style="font-weight: bold">= [</span>x <span style="font-weight: bold">- </span>minx <span style="color: blue; font-weight: bold">for </span>x <span style="color: blue; font-weight: bold">in </span>x_list<span style="font-weight: bold">]
+        </span>y_list <span style="font-weight: bold">= [</span>y <span style="font-weight: bold">- </span>miny <span style="color: blue; font-weight: bold">for </span>y <span style="color: blue; font-weight: bold">in </span>y_list<span style="font-weight: bold">]
+
+        </span><span style="color: green; font-style: italic"># Calculate flipped lists
+        </span>x_list_flipped <span style="font-weight: bold">= </span>negate_list_positive<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">)
+        </span>y_list_flipped <span style="font-weight: bold">= </span>negate_list_positive<span style="font-weight: bold">(</span>y_list<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># Set up data structure
+        </span>x_lists <span style="font-weight: bold">= []
+        </span>y_lists <span style="font-weight: bold">= []
+
+        </span><span style="color: green; font-style: italic"># Position 0: default
+        </span>x_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">)
+        </span>y_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>y_list<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># Position 1: rotated x1
+        </span>x_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>y_list<span style="font-weight: bold">)
+        </span>y_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>x_list_flipped<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># Position 2: rotated x2
+        </span>x_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>x_list_flipped<span style="font-weight: bold">)
+        </span>y_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>y_list_flipped<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># Position 3: rotated x3
+        </span>x_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>y_list_flipped<span style="font-weight: bold">)
+        </span>y_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># Positions 4-7: flipped copies
+        </span><span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">4</span><span style="font-weight: bold">):
+            </span>x_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>negate_list_positive<span style="font-weight: bold">(</span>x_lists<span style="font-weight: bold">[</span>i<span style="font-weight: bold">]))
+            </span>y_lists<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>y_lists<span style="font-weight: bold">[</span>i<span style="font-weight: bold">])
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientations <span style="font-weight: bold">= </span>set<span style="font-weight: bold">()
+
+        </span><span style="color: blue; font-weight: bold">for </span><span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">, </span>y_list<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">in </span>zip<span style="font-weight: bold">(</span>x_lists<span style="font-weight: bold">, </span>y_lists<span style="font-weight: bold">):
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientations<span style="font-weight: bold">.</span>add<span style="font-weight: bold">(</span>frozenset<span style="font-weight: bold">(</span>zip<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">, </span>y_list<span style="font-weight: bold">)))
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_tiles <span style="font-weight: bold">= </span>len<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientations <span style="font-weight: bold">= </span>frozenset<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientations<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>x <span style="font-weight: bold">= </span>x_list
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>y <span style="font-weight: bold">= </span>y_list
+
+    <span style="color: blue; font-weight: bold">def </span>get_num_tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Return the number of tiles in this block. Helpful for iterating
+        through each tile.
+        """
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_tiles
+
+    <span style="color: blue; font-weight: bold">def </span>copy<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span>Piece<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>x<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>y<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">])
+
+    </span><span style="color: blue; font-weight: bold">def </span>__iter__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientations<span style="font-weight: bold">.</span>__iter__<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>__str__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>out_str <span style="font-weight: bold">= []
+        </span><span style="color: blue; font-weight: bold">for </span>ori <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">:
+            </span>temp_arr <span style="font-weight: bold">= [[</span><span style="color: red">' ' </span><span style="color: blue; font-weight: bold">for </span>_ <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">5</span><span style="font-weight: bold">)] </span><span style="color: blue; font-weight: bold">for </span>_ <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">5</span><span style="font-weight: bold">)]
+            </span><span style="color: blue; font-weight: bold">for </span><span style="font-weight: bold">(</span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">in </span>ori<span style="font-weight: bold">:
+                </span>temp_arr<span style="font-weight: bold">[</span>y<span style="font-weight: bold">][</span>x<span style="font-weight: bold">] = </span><span style="color: red">'0'
+            </span>temp_arr <span style="font-weight: bold">= </span><span style="color: red">'\n'</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">(
+                [</span><span style="color: red">''</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">([</span>x_pos <span style="color: blue; font-weight: bold">for </span>x_pos <span style="color: blue; font-weight: bold">in </span>temp_arr<span style="font-weight: bold">[</span>y_val<span style="font-weight: bold">]])
+                 </span><span style="color: blue; font-weight: bold">for </span>y_val <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">5</span><span style="font-weight: bold">)]
+            )
+            </span>out_str<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>temp_arr<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: red">'\n'</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">(</span>out_str<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>__eq__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>other<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientations<span style="font-weight: bold">.</span>__eq__<span style="font-weight: bold">(</span>other<span style="font-weight: bold">.</span>orientations<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>__hash__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientations<span style="font-weight: bold">.</span>__hash__<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">class </span>PieceList<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    The PieceList class stores a list of all of the Blokus game pieces (the
+    distinct 5-polyominos).
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>fname<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Read the game pieces from the file &lt;fname&gt;
+
+        File format must be:
+        - Line 1: n (number of pieces)
+        - For k in [0, n):
+          - Line 1: line_index (number of lines in piece)
+          - Lines 2 - line_index+1: layout of piece (# means tile, O means center)
+
+        Sample file:
+        2
+        2
+        O#
+        ##
+        1
+        ##O##
+        """
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces <span style="font-weight: bold">= []
+        </span>directory <span style="font-weight: bold">= </span><span style="color: red">"layouts"
+        </span><span style="color: blue; font-weight: bold">if </span>fname <span style="color: blue; font-weight: bold">is not </span><span style="color: blue">None</span><span style="font-weight: bold">:
+            </span>with open<span style="font-weight: bold">(</span>os<span style="font-weight: bold">.</span>path<span style="font-weight: bold">.</span>join<span style="font-weight: bold">(</span>directory<span style="font-weight: bold">, </span>fname<span style="font-weight: bold">)) </span>as f<span style="font-weight: bold">:
+                </span>lines <span style="font-weight: bold">= </span>f<span style="font-weight: bold">.</span>read<span style="font-weight: bold">().</span>splitlines<span style="font-weight: bold">()
+
+            </span>n <span style="font-weight: bold">= </span>int<span style="font-weight: bold">(</span>lines<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">])
+            </span>line_index <span style="font-weight: bold">= </span><span style="color: red">1
+            </span><span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>n<span style="font-weight: bold">):
+                </span>x_origin <span style="font-weight: bold">= </span><span style="color: red">0
+                </span>y_origin <span style="font-weight: bold">= </span><span style="color: red">0
+
+                </span>x_list <span style="font-weight: bold">= []
+                </span>y_list <span style="font-weight: bold">= []
+
+                </span>num_lines <span style="font-weight: bold">= </span>int<span style="font-weight: bold">(</span>lines<span style="font-weight: bold">[</span>line_index<span style="font-weight: bold">])
+                </span><span style="color: blue; font-weight: bold">for </span>j <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>num_lines<span style="font-weight: bold">):
+                    </span>line <span style="font-weight: bold">= </span>lines<span style="font-weight: bold">[</span>line_index <span style="font-weight: bold">+ </span><span style="color: red">1 </span><span style="font-weight: bold">+ </span>j<span style="font-weight: bold">]
+                    </span><span style="color: blue; font-weight: bold">for </span>k <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>len<span style="font-weight: bold">(</span>line<span style="font-weight: bold">)):
+                        </span><span style="color: blue; font-weight: bold">if </span>line<span style="font-weight: bold">[</span>k<span style="font-weight: bold">] </span><span style="color: blue; font-weight: bold">in </span><span style="font-weight: bold">(</span><span style="color: red">'O'</span><span style="font-weight: bold">, </span><span style="color: red">'o'</span><span style="font-weight: bold">, </span><span style="color: red">'0'</span><span style="font-weight: bold">):
+                            </span>x_origin <span style="font-weight: bold">= </span>k
+                            y_origin <span style="font-weight: bold">= </span>j
+                        <span style="color: blue; font-weight: bold">if </span>line<span style="font-weight: bold">[</span>k<span style="font-weight: bold">] </span><span style="color: blue; font-weight: bold">is not </span><span style="color: red">' '</span><span style="font-weight: bold">:
+                            </span>x_list<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>k<span style="font-weight: bold">)
+                            </span>y_list<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>j<span style="font-weight: bold">)
+
+                </span>x_list <span style="font-weight: bold">= [</span>x <span style="font-weight: bold">- </span>x_origin <span style="color: blue; font-weight: bold">for </span>x <span style="color: blue; font-weight: bold">in </span>x_list<span style="font-weight: bold">]
+                </span>y_list <span style="font-weight: bold">= [</span>y <span style="font-weight: bold">- </span>y_origin <span style="color: blue; font-weight: bold">for </span>y <span style="color: blue; font-weight: bold">in </span>y_list<span style="font-weight: bold">]
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>Piece<span style="font-weight: bold">(</span>x_list<span style="font-weight: bold">, </span>y_list<span style="font-weight: bold">))
+
+                </span>line_index <span style="font-weight: bold">+= </span><span style="color: red">1 </span><span style="font-weight: bold">+ </span>num_lines
+
+    <span style="color: blue; font-weight: bold">def </span>get_num_pieces<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Return the number of distinct pieces in the list.
+        """
+        </span><span style="color: blue; font-weight: bold">return </span>len<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_piece<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>n<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Return piece &lt;n&gt; from this list.
+        """
+        </span><span style="color: blue; font-weight: bold">if </span>n <span style="font-weight: bold">&lt; </span><span style="color: red">0</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>ValueError<span style="font-weight: bold">(</span><span style="color: red">"Can't retrieve piece %d" </span><span style="font-weight: bold">% </span>n<span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">[</span>n<span style="font-weight: bold">]
+
+    </span><span style="color: blue; font-weight: bold">def </span>__iter__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">.</span>__iter__<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>copy<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>cpy_p_list <span style="font-weight: bold">= </span>PieceList<span style="font-weight: bold">(</span><span style="color: blue">None</span><span style="font-weight: bold">)
+        </span>cpy_p_list<span style="font-weight: bold">.</span>pieces <span style="font-weight: bold">= [</span>piece<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">() </span><span style="color: blue; font-weight: bold">for </span>piece <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">]
+        </span><span style="color: blue; font-weight: bold">return </span>cpy_p_list
+
+  </pre>
+  </body>
+  </html>
+  

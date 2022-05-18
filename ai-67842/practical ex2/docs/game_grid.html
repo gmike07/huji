@@ -1,0 +1,1456 @@
+<html>
+  <head>
+  <title>game_grid.py</title>
+  </head>
+  <body>
+  <h3>game_grid.py (<a href="../game_grid.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: green; font-style: italic">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+</span><span style="color: darkred">"""
+    tkGAME - all-in-one Game library for Tkinter
+
+    Generic Game Grid and subcomponents
+
+    Copyright (c) 2014+ Raphaël Seban &lt;motus@laposte.net&gt;
+
+    This program is free software: you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+    General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.
+
+    If not, see http://www.gnu.org/licenses/
+"""
+
+</span><span style="color: green; font-style: italic"># lib imports
+
+</span><span style="color: blue; font-weight: bold">import </span>tkinter as TK
+
+
+<span style="color: green; font-style: italic"># module utility function
+
+</span><span style="color: blue; font-weight: bold">def </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">, </span>minimum<span style="font-weight: bold">=</span><span style="color: red">1</span><span style="font-weight: bold">):
+    </span><span style="color: darkred">r"""
+        normalizes value along constraints;
+
+        returns UINT of @value or at least @minimum;
+    """
+
+    </span><span style="color: blue; font-weight: bold">return </span>max<span style="font-weight: bold">(</span>abs<span style="font-weight: bold">(</span>int<span style="font-weight: bold">(</span>minimum<span style="font-weight: bold">)), </span>abs<span style="font-weight: bold">(</span>int<span style="font-weight: bold">(</span>value<span style="font-weight: bold">)))
+
+
+</span><span style="color: green; font-style: italic"># end def
+
+
+# main class def
+
+</span><span style="color: blue; font-weight: bold">class </span>GameGrid<span style="font-weight: bold">(</span>TK<span style="font-weight: bold">.</span>Canvas<span style="font-weight: bold">):
+    </span><span style="color: darkred">r"""
+        Generic Game Grid component;
+    """
+
+    </span><span style="color: green; font-style: italic"># background color
+
+    </span>BGCOLOR <span style="font-weight: bold">= </span><span style="color: red">"white"
+
+    </span><span style="color: green; font-style: italic"># foreground color
+
+    </span>FGCOLOR <span style="font-weight: bold">= </span><span style="color: red">"grey"
+
+    </span><span style="color: green; font-style: italic"># nb of rows and columns in grid
+
+    </span>ROWS <span style="font-weight: bold">= </span><span style="color: red">3
+
+    </span>COLUMNS <span style="font-weight: bold">= </span><span style="color: red">3
+
+    </span><span style="color: green; font-style: italic"># thickness of a line stroke
+
+    </span>THICKNESS <span style="font-weight: bold">= </span><span style="color: red">8  </span><span style="color: green; font-style: italic"># pixels
+
+    # default global config values
+
+    </span>CONFIG <span style="font-weight: bold">= {
+
+        </span><span style="color: red">"background"</span><span style="font-weight: bold">: </span>BGCOLOR<span style="font-weight: bold">,
+
+        </span><span style="color: red">"highlightthickness"</span><span style="font-weight: bold">: </span><span style="color: red">0</span><span style="font-weight: bold">,
+
+        </span><span style="color: red">"width"</span><span style="font-weight: bold">: </span><span style="color: red">500</span><span style="font-weight: bold">,  </span><span style="color: green; font-style: italic"># pixels
+
+        </span><span style="color: red">"height"</span><span style="font-weight: bold">: </span><span style="color: red">500</span><span style="font-weight: bold">,  </span><span style="color: green; font-style: italic"># pixels
+
+    </span><span style="font-weight: bold">}  </span><span style="color: green; font-style: italic"># end of CONFIG
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>master<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+
+        </span><span style="color: green; font-style: italic"># member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>CONFIG <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>CONFIG<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>CONFIG<span style="font-weight: bold">.</span>update<span style="font-weight: bold">(</span>kw<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># super class inits
+
+        </span>TK<span style="font-weight: bold">.</span>Canvas<span style="font-weight: bold">.</span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>master<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>configure<span style="font-weight: bold">(**</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_only_tk<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>CONFIG<span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># public members
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">= </span>kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"rows"</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>ROWS<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">= </span>kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"columns"</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>COLUMNS<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>thickness <span style="font-weight: bold">= </span>kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"thickness"</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>THICKNESS<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>bgcolor <span style="font-weight: bold">= </span>kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"bgcolor"</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>BGCOLOR<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fgcolor <span style="font-weight: bold">= </span>kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"fgcolor"</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>FGCOLOR<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># private member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tk_owner <span style="font-weight: bold">= </span>master
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>__tiles <span style="font-weight: bold">= </span>dict<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__matrix <span style="font-weight: bold">= </span>GridMatrix<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__cell_size <span style="font-weight: bold">= </span>GridCellSize<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># widget inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>init_widget<span style="font-weight: bold">(**</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>CONFIG<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tiles
+
+    <span style="color: blue; font-weight: bold">def </span>_only_tk<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            private method def;
+
+            filters external keywords to suit tkinter init options;
+
+            returns filtered dict() of keywords;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_dict <span style="font-weight: bold">= </span>dict<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># $ 2014-03-24 RS $
+        # Caution:
+        # TK widget *MUST* be init'ed before calling _only_tk() /!\
+        # self.configure() needs self.tk to work well
+
+        </span><span style="color: blue; font-weight: bold">if </span>hasattr<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span><span style="color: red">"tk"</span><span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">and </span>hasattr<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span><span style="color: red">"configure"</span><span style="font-weight: bold">):
+
+            </span>_attrs <span style="font-weight: bold">= </span>set<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>configure<span style="font-weight: bold">().</span>keys<span style="font-weight: bold">()) &amp; </span>set<span style="font-weight: bold">(</span>kw<span style="font-weight: bold">.</span>keys<span style="font-weight: bold">())
+
+            </span><span style="color: blue; font-weight: bold">for </span>_key <span style="color: blue; font-weight: bold">in </span>_attrs<span style="font-weight: bold">:
+                </span>_dict<span style="font-weight: bold">[</span>_key<span style="font-weight: bold">] = </span>kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span>_key<span style="font-weight: bold">)
+
+            </span><span style="color: green; font-style: italic"># end for
+
+        # end if
+
+        </span><span style="color: blue; font-weight: bold">return </span>_dict
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>cell_size<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns internal GridCellSize object instance;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__cell_size
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>clear_all<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            clears up all critical members;
+        """
+
+        </span><span style="color: green; font-style: italic"># clear grid
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>clear_grid<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># clear tiles collection
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>clear_tiles<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># clear matrix
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>reset_matrix<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>clear_grid<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            clears up grid canvas entirely;
+        """
+
+        </span><span style="color: green; font-style: italic"># clear grid
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>delete<span style="font-weight: bold">(</span>TK<span style="font-weight: bold">.</span>ALL<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>clear_tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            clears up tiles collection entirely;
+        """
+
+        </span><span style="color: green; font-style: italic"># clear tiles
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tiles<span style="font-weight: bold">.</span>clear<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>columns<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns grid's current nb of columns;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__columns
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@columns<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>columns<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__columns <span style="font-weight: bold">= </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@columns<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>columns<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__columns
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_coords<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">, </span>centered<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            calculates canvas (x, y) coordinates from grid matrix
+            (row, column) pair;
+        """
+
+        </span><span style="color: green; font-style: italic"># get (left, top) coordinates
+
+        </span>_x<span style="font-weight: bold">, </span>_y <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>xy_left_top<span style="font-weight: bold">(</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># center coords?
+
+        </span><span style="color: blue; font-weight: bold">if </span>centered<span style="font-weight: bold">:
+            </span>_x <span style="font-weight: bold">+= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>width <span style="font-weight: bold">// </span><span style="color: red">2
+
+            </span>_y <span style="font-weight: bold">+= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>height <span style="font-weight: bold">// </span><span style="color: red">2
+
+        </span><span style="color: green; font-style: italic"># end if
+
+        # new coordinates
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span>_x<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>grid_height<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns grid's height;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqheight<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>grid_size<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns (real_width, real_height) pair;
+        """
+
+        </span><span style="color: green; font-style: italic"># must adjust along thickness
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(
+
+            (</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>grid_width <span style="font-weight: bold">- </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>half_high<span style="font-weight: bold">),
+
+            (</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>grid_height <span style="font-weight: bold">- </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>half_high<span style="font-weight: bold">)
+        )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>grid_width<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns grid's width;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqwidth<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>half_high<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns half thickness, high value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span>round<span style="font-weight: bold">(</span><span style="color: red">0.1 </span><span style="font-weight: bold">+ </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>thickness <span style="font-weight: bold">/ </span><span style="color: red">2</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>half_low<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns half thickness, low value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>thickness <span style="font-weight: bold">// </span><span style="color: red">2
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>init_widget<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            widget's main inits;
+        """
+
+        </span><span style="color: green; font-style: italic"># put your own code in subclass
+
+        </span><span style="color: blue; font-weight: bold">pass
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>is_full<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            evaluates available room in grid;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span>len<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tiles<span style="font-weight: bold">) &gt;= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>max_tiles
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>is_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            determines whether canvas item at (row, column) is of
+            tile type or not;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits coordinates
+
+        </span>_x<span style="font-weight: bold">, </span>_y <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_coords<span style="font-weight: bold">(</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">, </span>centered<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># get canvas item id
+
+        </span>_item_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>find_overlapping<span style="font-weight: bold">(</span>_x<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">, </span>_x<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># is a tile?
+
+        </span><span style="color: blue; font-weight: bold">return </span>bool<span style="font-weight: bold">(</span>_item_id <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tiles<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>matrix<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns internal matrix object;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__matrix
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@matrix<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>matrix<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__matrix <span style="font-weight: bold">= </span>value
+
+    @property
+    <span style="color: blue; font-weight: bold">def </span>max_tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns maximum number of tiles currently admitted;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">* </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>owner<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns ref to private tk_owner;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tk_owner
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>register_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tile_id<span style="font-weight: bold">, </span>tile_object<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            registers new tile in tiles dict();
+        """
+
+        </span><span style="color: green; font-style: italic"># new tile id?
+
+        </span><span style="color: blue; font-weight: bold">if </span>tile_id <span style="color: blue; font-weight: bold">not in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tiles<span style="font-weight: bold">:
+
+            </span><span style="color: green; font-style: italic"># register tile object
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tiles<span style="font-weight: bold">[</span>tile_id<span style="font-weight: bold">] = </span>tile_object
+
+        <span style="color: blue; font-weight: bold">elif </span>raise_error<span style="font-weight: bold">:
+
+            </span><span style="color: green; font-style: italic"># should *NOT* override already existing tile
+
+            </span><span style="color: blue; font-weight: bold">raise </span>KeyError<span style="font-weight: bold">(
+
+                </span><span style="color: red">"tile id '{tid}' is already registered."
+
+                    </span><span style="font-weight: bold">.</span>format<span style="font-weight: bold">(</span>tid<span style="font-weight: bold">=</span>tile_id<span style="font-weight: bold">)
+            )
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>remove_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tile_id<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            removes silently if exists;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tiles<span style="font-weight: bold">.</span>pop<span style="font-weight: bold">(</span>tile_id<span style="font-weight: bold">, </span><span style="color: blue">None</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>reset_grid<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            clears up and redraws grid entirely;
+        """
+
+        </span><span style="color: green; font-style: italic"># clear all
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>clear_all<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># canvas dims
+
+        </span>_grid_width<span style="font-weight: bold">, </span>_grid_height <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>grid_size
+
+        <span style="color: green; font-style: italic"># point of origin
+
+        </span>_x0<span style="font-weight: bold">, </span>_y0 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_origin
+
+        <span style="color: green; font-style: italic"># thickness
+
+        </span>_thickness <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>thickness
+
+        <span style="color: green; font-style: italic"># foreground color
+
+        </span>_fg <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fgcolor
+
+        <span style="color: green; font-style: italic"># draw rectangle
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_rectangle<span style="font-weight: bold">(
+
+            </span>_x0<span style="font-weight: bold">, </span>_y0<span style="font-weight: bold">, </span>_grid_width<span style="font-weight: bold">, </span>_grid_height<span style="font-weight: bold">,
+
+            </span>outline<span style="font-weight: bold">=</span>_fg<span style="font-weight: bold">, </span>width<span style="font-weight: bold">=</span>_thickness<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># draw vertical lines
+
+        </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+            </span>_x <span style="font-weight: bold">= </span>_x0 <span style="font-weight: bold">+ </span>_column <span style="font-weight: bold">* (</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>width <span style="font-weight: bold">+ </span>_thickness<span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_line<span style="font-weight: bold">(
+
+                </span>_x<span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">, </span>_x<span style="font-weight: bold">, </span>_grid_height<span style="font-weight: bold">,
+
+                </span>fill<span style="font-weight: bold">=</span>_fg<span style="font-weight: bold">, </span>width<span style="font-weight: bold">=</span>_thickness<span style="font-weight: bold">,
+            )
+
+        </span><span style="color: green; font-style: italic"># end for
+
+        # draw horizontal lines
+
+        </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+            </span>_y <span style="font-weight: bold">= </span>_y0 <span style="font-weight: bold">+ </span>_row <span style="font-weight: bold">* (</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>height <span style="font-weight: bold">+ </span>_thickness<span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_line<span style="font-weight: bold">(
+
+                </span><span style="color: red">0</span><span style="font-weight: bold">, </span>_y<span style="font-weight: bold">, </span>_grid_width<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">,
+
+                </span>fill<span style="font-weight: bold">=</span>_fg<span style="font-weight: bold">, </span>width<span style="font-weight: bold">=</span>_thickness<span style="font-weight: bold">,
+            )
+
+        </span><span style="color: green; font-style: italic"># end for
+
+    # end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>rows<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns grid's current nb of rows;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__rows
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@rows<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>rows<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__rows <span style="font-weight: bold">= </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@rows<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>rows<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__rows
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>thickness<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns grid's line stroke thickness;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__thickness
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@thickness<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>thickness<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__thickness <span style="font-weight: bold">= </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">, </span>minimum<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@thickness<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>thickness<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__thickness
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns internal tiles collection;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tiles
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>xy_origin<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns (x0, y0) point of origin of grid drawings;
+        """
+
+        </span><span style="color: green; font-style: italic"># must adjust along thickness
+
+        </span>_x0 <span style="font-weight: bold">= </span>_y0 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>half_low
+
+        <span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span>_x0<span style="font-weight: bold">, </span>_y0<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>xy_center<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns (x, y) coordinates of canvas' center point;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>grid_width <span style="font-weight: bold">// </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>grid_height <span style="font-weight: bold">// </span><span style="color: red">2</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+
+# end class GameGrid
+
+
+# subcomponent class def
+
+</span><span style="color: blue; font-weight: bold">class </span>GridAnimation<span style="font-weight: bold">(</span>TK<span style="font-weight: bold">.</span>Frame<span style="font-weight: bold">):
+    </span><span style="color: darkred">r"""
+        GridAnimation - GameGrid subcomponent;
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>master<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">):
+
+        </span><span style="color: green; font-style: italic"># super class inits
+
+        </span>TK<span style="font-weight: bold">.</span>Frame<span style="font-weight: bold">.</span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>master<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># public member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner <span style="font-weight: bold">= </span>master
+
+        <span style="color: green; font-style: italic"># private member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__pid <span style="font-weight: bold">= </span><span style="color: red">0
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__animation_kw <span style="font-weight: bold">= </span>dict<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback <span style="font-weight: bold">= </span><span style="color: blue">None
+
+        self</span><span style="font-weight: bold">.</span>__callback_args <span style="font-weight: bold">= </span>tuple<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback_kw <span style="font-weight: bold">= </span>dict<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>keywords<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns internal animation's keywords;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__animation_kw
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>register<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>callback<span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            registers callback function/method with its own
+            arguments and keywords;
+
+            returns True on success, False otherwise;
+        """
+
+        </span><span style="color: blue; font-weight: bold">if </span>callable<span style="font-weight: bold">(</span>callback<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># init callback
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback <span style="font-weight: bold">= </span>callback
+
+            <span style="color: green; font-style: italic"># init args and kw
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback_args <span style="font-weight: bold">= </span>args
+
+            <span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback_kw <span style="font-weight: bold">= </span>kw
+
+            <span style="color: green; font-style: italic"># success
+
+            </span><span style="color: blue; font-weight: bold">return True
+
+        else</span><span style="font-weight: bold">:
+
+            </span><span style="color: blue; font-weight: bold">raise </span>TypeError<span style="font-weight: bold">(
+
+                </span><span style="color: red">"callback object *MUST* be a callable one."
+            </span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if - callable
+
+        # failure
+
+        </span><span style="color: blue; font-weight: bold">return False
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>resume<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            resumes animation with current param values;
+
+            returns newly created process id (pid) on success,
+            integer zero (0 - no pid) otherwise;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>run_sequencer<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>run_sequencer<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>animation_kw<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            runs animation loop itself with some cool features;
+
+            returns newly created process id (pid) on success,
+            integer zero (0 - no pid) otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># stops previous pending process, if any;
+        # resets self.__pid = 0 whatever happens;
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>stop<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># first of all
+
+        </span><span style="color: blue; font-weight: bold">if </span>callable<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># param controls
+
+            </span><span style="color: blue; font-weight: bold">if </span>isinstance<span style="font-weight: bold">(</span>animation_kw<span style="font-weight: bold">, </span>dict<span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># set new keywords
+
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__animation_kw <span style="font-weight: bold">= </span>_anim_kw <span style="font-weight: bold">= </span>animation_kw
+
+            <span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+
+                </span><span style="color: green; font-style: italic"># get previously stored keywords
+
+                </span>_anim_kw <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__animation_kw
+
+            <span style="color: green; font-style: italic"># end if - animation_kw
+
+            # param inits
+
+            </span>_sequence <span style="font-weight: bold">= </span>_anim_kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"sequence"</span><span style="font-weight: bold">)
+
+            </span><span style="color: green; font-style: italic"># indexed and iterable sequence?
+
+            </span><span style="color: blue; font-weight: bold">if </span>isinstance<span style="font-weight: bold">(</span>_sequence<span style="font-weight: bold">, (</span>list<span style="font-weight: bold">, </span>tuple<span style="font-weight: bold">)):
+
+                </span><span style="color: green; font-style: italic"># get other inits
+
+                </span>_interval <span style="font-weight: bold">= </span>int<span style="font-weight: bold">(</span>_anim_kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"interval"</span><span style="font-weight: bold">, </span><span style="color: red">100</span><span style="font-weight: bold">))
+
+                </span>_step <span style="font-weight: bold">= </span>int<span style="font-weight: bold">(</span>_anim_kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"step"</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">))
+
+                </span><span style="color: green; font-style: italic"># should we run a new step?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_step <span style="font-weight: bold">&lt; </span>len<span style="font-weight: bold">(</span>_sequence<span style="font-weight: bold">):
+                    </span><span style="color: green; font-style: italic"># update values in callback keywords
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback_kw<span style="font-weight: bold">.</span>update<span style="font-weight: bold">(
+
+                        </span>value<span style="font-weight: bold">=</span>_sequence<span style="font-weight: bold">[</span>_step<span style="font-weight: bold">]
+                    )
+
+                    </span><span style="color: green; font-style: italic"># call callback with args and kw
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback<span style="font-weight: bold">(
+
+                        *</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback_args<span style="font-weight: bold">, **</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__callback_kw
+                    <span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># schedule next step
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__animation_kw<span style="font-weight: bold">[</span><span style="color: red">"step"</span><span style="font-weight: bold">] = </span>_step <span style="font-weight: bold">+ </span><span style="color: red">1
+
+                    </span><span style="color: green; font-style: italic"># go further
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__pid <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>after<span style="font-weight: bold">(
+
+                        </span>_interval<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>run_sequencer
+                    <span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># end if - new step
+
+            # end if - sequence
+
+        # end if - callable
+
+        # current process id (pid) or 0 on failure
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__pid
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>start<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>interval<span style="font-weight: bold">=</span><span style="color: red">100</span><span style="font-weight: bold">, </span>step<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">, </span>sequence<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            starts animation loop along params;
+
+            returns newly created process id (pid) on success,
+            integer zero (0 - no pid) otherwise;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>run_sequencer<span style="font-weight: bold">(
+
+            </span>dict<span style="font-weight: bold">(</span>interval<span style="font-weight: bold">=</span>interval<span style="font-weight: bold">, </span>step<span style="font-weight: bold">=</span>step<span style="font-weight: bold">, </span>sequence<span style="font-weight: bold">=</span>sequence<span style="font-weight: bold">)
+        )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>start_after<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>delay<span style="font-weight: bold">=</span><span style="color: red">500</span><span style="font-weight: bold">, </span>interval<span style="font-weight: bold">=</span><span style="color: red">100</span><span style="font-weight: bold">, </span>step<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">, </span>sequence<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            runs deferred animation after @delay (in milliseconds);
+
+            returns newly created process id (pid) of deferred call;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__pid <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>after<span style="font-weight: bold">(
+
+            </span>delay<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>start<span style="font-weight: bold">, </span>interval<span style="font-weight: bold">, </span>step<span style="font-weight: bold">, </span>sequence
+        <span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__pid
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>stop<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>pid<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            stops a deferred process along @pid or along internal
+            pid if omitted;
+
+            no return value (void);
+        """
+
+        </span><span style="color: green; font-style: italic"># specific pid to cancel?
+
+        </span><span style="color: blue; font-weight: bold">if </span>pid<span style="font-weight: bold">:
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>after_cancel<span style="font-weight: bold">(</span>pid<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># internal pid
+
+        </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>after_cancel<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__pid<span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__pid <span style="font-weight: bold">= </span><span style="color: red">0
+
+        </span><span style="color: green; font-style: italic"># end if - pid
+
+    # end def
+
+
+# end class GridAnimation
+
+
+# subcomponent class def
+
+</span><span style="color: blue; font-weight: bold">class </span>GridCellSize<span style="font-weight: bold">:
+    </span><span style="color: darkred">r"""
+        GridCellSize - GameGrid subcomponent;
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>grid_owner<span style="font-weight: bold">):
+
+        </span><span style="color: green; font-style: italic"># private member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tk_owner <span style="font-weight: bold">= </span>grid_owner
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>__width <span style="font-weight: bold">= </span><span style="color: blue">None
+
+        self</span><span style="font-weight: bold">.</span>__height <span style="font-weight: bold">= </span><span style="color: blue">None
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>_real_size<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>size<span style="font-weight: bold">, </span>count<span style="font-weight: bold">, </span>thickness<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            adjusts calculations to meet real GridCellSize size;
+        """
+
+        </span><span style="color: green; font-style: italic"># adjust to correct size
+
+        </span>_size <span style="font-weight: bold">= </span>size <span style="font-weight: bold">- (</span>count <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">) * </span>thickness
+
+        <span style="color: green; font-style: italic"># return real size
+
+        </span><span style="color: blue; font-weight: bold">return </span>round<span style="font-weight: bold">(</span>abs<span style="font-weight: bold">(</span>_size <span style="font-weight: bold">// </span>count<span style="font-weight: bold">))
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>height<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            gets GridCellSize's real height;
+        """
+
+        </span><span style="color: green; font-style: italic"># missing pre-computed dimension?
+
+        </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__height<span style="font-weight: bold">:
+            </span><span style="color: green; font-style: italic"># get cell's real height dimension
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__height <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_real_size<span style="font-weight: bold">(
+
+                </span>size<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>grid_height<span style="font-weight: bold">,
+
+                </span>count<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>rows<span style="font-weight: bold">,
+
+                </span>thickness<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>thickness<span style="font-weight: bold">,
+            )
+
+        </span><span style="color: green; font-style: italic"># end if
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__height
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>owner<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns ref to private tk_owner;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tk_owner
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>size<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns a (width, height) pair;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>width<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>height<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>size_hxw<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns a (height, width) pair;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>height<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>width<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>size_wxh<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns a (width, height) pair;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>width<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>height<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>width<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            gets GridCellSize's real width;
+        """
+
+        </span><span style="color: green; font-style: italic"># missing pre-computed dimension?
+
+        </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__width<span style="font-weight: bold">:
+            </span><span style="color: green; font-style: italic"># get cell's real width dimension
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__width <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_real_size<span style="font-weight: bold">(
+
+                </span>size<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>grid_width<span style="font-weight: bold">,
+
+                </span>count<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>columns<span style="font-weight: bold">,
+
+                </span>thickness<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>thickness<span style="font-weight: bold">,
+            )
+
+        </span><span style="color: green; font-style: italic"># end if
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__width
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>x_center<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns only centered x coordinate;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>x_left<span style="font-weight: bold">(</span>column<span style="font-weight: bold">) + </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>width <span style="font-weight: bold">// </span><span style="color: red">2
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>x_left<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns only x_left coordinate;
+        """
+
+        </span><span style="color: green; font-style: italic"># rebind location
+
+        </span>_column <span style="font-weight: bold">= </span>min<span style="font-weight: bold">(</span>abs<span style="font-weight: bold">(</span>int<span style="font-weight: bold">(</span>column<span style="font-weight: bold">)), </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>columns<span style="font-weight: bold">)
+
+        </span>_thickness <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>thickness
+
+        <span style="color: green; font-style: italic"># make calculations
+
+        </span>_x <span style="font-weight: bold">= </span>_thickness <span style="font-weight: bold">+ </span>_column <span style="font-weight: bold">* (</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>width <span style="font-weight: bold">+ </span>_thickness<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># new coordinate
+
+        </span><span style="color: blue; font-weight: bold">return </span>_x
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>xy_center<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns (x, y) centered coordinates;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>x_center<span style="font-weight: bold">(</span>column<span style="font-weight: bold">), </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>y_center<span style="font-weight: bold">(</span>row<span style="font-weight: bold">))
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>xy_left_top<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns (x_left, y_top) coordinates;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>x_left<span style="font-weight: bold">(</span>column<span style="font-weight: bold">), </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>y_top<span style="font-weight: bold">(</span>row<span style="font-weight: bold">))
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>y_center<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns only centered y coordinate;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>y_top<span style="font-weight: bold">(</span>row<span style="font-weight: bold">) + </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>height <span style="font-weight: bold">// </span><span style="color: red">2
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>y_top<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns only y_top coordinate;
+        """
+
+        </span><span style="color: green; font-style: italic"># rebind location
+
+        </span>_row <span style="font-weight: bold">= </span>min<span style="font-weight: bold">(</span>abs<span style="font-weight: bold">(</span>int<span style="font-weight: bold">(</span>row<span style="font-weight: bold">)), </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>rows<span style="font-weight: bold">)
+
+        </span>_thickness <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>thickness
+
+        <span style="color: green; font-style: italic"># make calculations
+
+        </span>_y <span style="font-weight: bold">= </span>_thickness <span style="font-weight: bold">+ </span>_row <span style="font-weight: bold">* (</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>height <span style="font-weight: bold">+ </span>_thickness<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># new coordinate
+
+        </span><span style="color: blue; font-weight: bold">return </span>_y
+
+    <span style="color: green; font-style: italic"># end def
+
+
+# end class GridCellSize
+
+
+# subcomponent class def
+
+</span><span style="color: blue; font-weight: bold">class </span>GridError<span style="font-weight: bold">(</span>Exception<span style="font-weight: bold">):
+    </span><span style="color: darkred">r"""
+        Exception handler for convenience;
+    """
+
+    </span><span style="color: blue; font-weight: bold">pass
+
+
+</span><span style="color: green; font-style: italic"># end class GridError
+
+
+# subcomponent class def
+
+</span><span style="color: blue; font-weight: bold">class </span>GridMatrix<span style="font-weight: bold">:
+    </span><span style="color: darkred">r"""
+        GridMatrix - GameGrid subcomponent;
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>rows<span style="font-weight: bold">, </span>columns<span style="font-weight: bold">):
+
+        </span><span style="color: green; font-style: italic"># member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">= </span>rows
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">= </span>columns
+
+        <span style="color: green; font-style: italic"># first time: reset matrix
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>reset_matrix<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>add<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>object_<span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            adds an object at (row, column) in matrix;
+
+            raises error if @raise_error and busy location;
+
+            returns True on success, False otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># all is OK?
+
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get<span style="font-weight: bold">((</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">)) </span><span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+
+            </span><span style="color: green; font-style: italic"># add object to matrix
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">[(</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">)] = </span>object_
+
+            <span style="color: green; font-style: italic"># succeeded
+
+            </span><span style="color: blue; font-weight: bold">return True
+
+        elif </span>raise_error<span style="font-weight: bold">:
+
+            </span><span style="color: blue; font-weight: bold">raise </span>GridError<span style="font-weight: bold">(
+
+                </span><span style="color: red">"cannot add object at (row, column) = "
+
+                "({row}, {col}): busy location."
+
+                    </span><span style="font-weight: bold">.</span>format<span style="font-weight: bold">(</span>row<span style="font-weight: bold">=</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">=</span>column<span style="font-weight: bold">)
+            )
+
+        </span><span style="color: green; font-style: italic"># end if
+
+        # failed
+
+        </span><span style="color: blue; font-weight: bold">return False
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>columns<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns number of columns in matrix;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__columns
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@columns<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>columns<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__columns <span style="font-weight: bold">= </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@columns<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>columns<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__columns
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>duplicate_object<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>from_row_column<span style="font-weight: bold">, </span>to_row_column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            duplicates the object located at @from_row_column into
+            @to_row_column if exists;
+
+            raises errors otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># get object if exists
+
+        </span>_object <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_object_at<span style="font-weight: bold">(*</span>from_row_column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># add copy to new location
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>add<span style="font-weight: bold">(</span>_object<span style="font-weight: bold">, *</span>to_row_column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_object_at<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns the object located at (row, column) in the
+            matrix or None on failure;
+
+            raises an error if @raise_error and empty location;
+        """
+
+        </span><span style="color: green; font-style: italic"># get object
+
+        </span>_object <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get<span style="font-weight: bold">((</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># no object found?
+
+        </span><span style="color: blue; font-weight: bold">if </span>raise_error <span style="color: blue; font-weight: bold">and </span>_object <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">raise </span>GridError<span style="font-weight: bold">(
+
+                </span><span style="color: red">"no object found at (row, column) = "
+
+                "({row}, {col}): empty location."
+
+                    </span><span style="font-weight: bold">.</span>format<span style="font-weight: bold">(</span>row<span style="font-weight: bold">=</span>row<span style="font-weight: bold">, </span>col<span style="font-weight: bold">=</span>column<span style="font-weight: bold">)
+            )
+
+        </span><span style="color: green; font-style: italic"># end if
+
+        </span><span style="color: blue; font-weight: bold">return </span>_object
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>matrix<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns internal matrix object;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__matrix
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_object<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>from_row_column<span style="font-weight: bold">, </span>to_row_column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves the object located at @from_row_column to
+            @to_row_column if exists;
+
+            raises errors otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># get object if exists
+
+        </span>_object <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_object_at<span style="font-weight: bold">(*</span>from_row_column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># add it to new location
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>add<span style="font-weight: bold">(</span>_object<span style="font-weight: bold">, *</span>to_row_column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># and then remove it from old location
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>remove_object_at<span style="font-weight: bold">(*</span>from_row_column<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>remove_object_at<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            removes the object located at (row, column) from the
+            matrix, if any;
+        """
+
+        </span><span style="color: green; font-style: italic"># remove object
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>pop<span style="font-weight: bold">((</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">), </span><span style="color: blue">None</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>reset_matrix<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            resets matrix;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__matrix <span style="font-weight: bold">= </span>dict<span style="font-weight: bold">()
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>rows<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns number of rows in matrix;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__rows
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@rows<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>rows<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__rows <span style="font-weight: bold">= </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@rows<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>rows<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__rows
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>swap_objects<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row_column1<span style="font-weight: bold">, </span>row_column2<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            swaps two objects located at @row_column1 and
+            @row_column2 if they do exist;
+
+            raises errors otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># get objects if exist
+
+        </span>_object1 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_object_at<span style="font-weight: bold">(*</span>row_column1<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span>_object2 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_object_at<span style="font-weight: bold">(*</span>row_column2<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># clear locations
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>remove_object_at<span style="font-weight: bold">(*</span>row_column1<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>remove_object_at<span style="font-weight: bold">(*</span>row_column2<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># swap locations
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>add<span style="font-weight: bold">(</span>_object1<span style="font-weight: bold">, *</span>row_column2<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>add<span style="font-weight: bold">(</span>_object2<span style="font-weight: bold">, *</span>row_column1<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+
+# end class GridMatrix
+
+
+# subcomponent class def
+
+</span><span style="color: blue; font-weight: bold">class </span>GridTile<span style="font-weight: bold">:
+    </span><span style="color: darkred">r"""
+        GridTile - GameGrid subcomponent;
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>grid_owner<span style="font-weight: bold">, </span>value<span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">, </span>tile_animation<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">):
+        </span><span style="color: green; font-style: italic"># private member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tk_owner <span style="font-weight: bold">= </span>grid_owner
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>__cell_size <span style="font-weight: bold">= </span>grid_owner<span style="font-weight: bold">.</span>cell_size
+
+        <span style="color: green; font-style: italic"># unique tag id for canvas tags management
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag <span style="font-weight: bold">= </span><span style="color: red">"GridTile{}"</span><span style="font-weight: bold">.</span>format<span style="font-weight: bold">(</span>id<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># public member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>id <span style="font-weight: bold">= </span><span style="color: blue">None
+
+        self</span><span style="font-weight: bold">.</span>value <span style="font-weight: bold">= </span>value
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>row <span style="font-weight: bold">= </span>row
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>column <span style="font-weight: bold">= </span>column
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>tile_animation <span style="font-weight: bold">= </span>tile_animation
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>cell_size<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns object's GridCellSize structure;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__cell_size
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>column<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns object's normalized column;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__column
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@column<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>column<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__column <span style="font-weight: bold">= </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">, </span>minimum<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@column<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>column<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__column
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>row_column<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns a (row, column) pair;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>column<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>owner<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns ref to private tk_owner;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__tk_owner
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>row<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns object's normalized row;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__row
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@row<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>row<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__row <span style="font-weight: bold">= </span>normalize<span style="font-weight: bold">(</span>value<span style="font-weight: bold">, </span>minimum<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@row<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>row<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__row
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>size<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns object's (width, height) cell size;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>size_wxh
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>value<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns object's value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__value
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@value<span style="font-weight: bold">.</span>setter
+    <span style="color: blue; font-weight: bold">def </span>value<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>new_value<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__value <span style="font-weight: bold">= </span>new_value
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@value<span style="font-weight: bold">.</span>deleter
+    <span style="color: blue; font-weight: bold">def </span>value<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">del </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__value
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>xy_center<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns tile's (x, y) center point on canvas;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>xy_center<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>column<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span>@property
+    <span style="color: blue; font-weight: bold">def </span>xy_origin<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns tile's (x_left, y_top) point of origin on canvas;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>xy_left_top<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>column<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+# end class GridTile
+</span>
+  </pre>
+  </body>
+  </html>
+  

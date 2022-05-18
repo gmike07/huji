@@ -1,0 +1,22 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex1:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 2 files:
+
+math_print.py - Uses math library for 6 printing math functions and then uses the functions
+hello_turtle.py - Uses the turtle library to draw a garden with the requested api and can draw a petal, a flower, and a garden.
+
+
+======================
+=  Special Comments  =
+======================

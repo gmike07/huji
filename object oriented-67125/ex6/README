@@ -1,0 +1,96 @@
+mikeg
+eporat
+
+=============================
+=      File description     =
+=============================
+TextSearcher - Text Searcher
+Aindexer - Aindexer
+IndexerFactory - Indexer Factory
+ObjectWriter - Object Writer
+CustomIndexer - Custom Indexer
+DictionaryIndexer - Dictionary Indexer
+NaiveIndexer - Naive Indexer
+NaiveIndexerRK - Naive Indexer RK
+Edge - Edge
+EdgeBag - Edge Bag
+GeneralizedSuffixTree - Generalized Suffix Tree
+Node - Node
+SuffixTreeIndexer - Suffix Tree Indexer
+Utils - Utils
+IparsingRule - Iparsing Rule
+ParsingFactory - Parsing Factory
+ParsingHelper - Parsing Helper
+SimpleParsingRule - Simple Parsing Rule
+STmovieParsingRule - STmovie Parsing Rule
+STtvSeriesParsingRule - STtv Series Parsing Rule
+CustomSearch - Custom Search
+DictionarySearch - Dictionary Search
+IsearchStrategy - Isearch Strategy
+NaiveSearch - Naive Search
+NaiveSearchRK - Naive Search RK
+SearchHelper - Search Helper
+SuffixTreeSearch - Suffix Tree Search
+WordContainer - Word Container
+Block - Block
+Corpus - Corpus
+Entry - Entry
+MultiWordResult - Multi Word Result
+Word - Word
+WordResult - Word Result
+BadInputException - Bad Input Exception
+MD5 - MD5
+Parser - Parser
+Stemmer - Stemmer
+Stopwords - Stopwords
+ToolBox - Tool Box
+WrongMD5ChecksumException - Wrong MD5Checksum Exception
+
+=============================
+=          Design           =
+=============================
+
+
+we created a parser class to parse the file that was given as input and throw error if the file misbehaves.
+Therefore, we only needed to deal with IO problems if the parser worked fine.
+
+We decided to create a (static) ToolBox class that has functionality to read raf's.
+
+We decided to create a "WordContainer" to have the data of a word (length, block, startIndex) in dictionary
+searcher and suffix tree searcher, for easier way to create all possible options.
+
+We decided to create a (static) SearchHelper because most of the code of the suffix tree searcher and
+dictionary searcher was the same.
+
+We decided to create parsing and indexing factory for cleaner code, readability.
+
+We decided to create a (static) ParsingHelper because most of the code of the movie parser and
+tv parser was the same. We stored a list for metadata of the entry that each block uses.
+
+We decided to crete an (static) ObjectWriter because most of the code of the suffix tree indexer and
+dictionary indexer was the same, while reading and writing objects.
+
+Furthermore, we decided to create a custom searcher, we chose to implement the
+Boyer-Moore string-search algorithm, The algorithm pre processes the pattern and saves the last occurrence of
+each character. We used a bad character rule which shifts the pattern when a mismatched occurrence in the text
+in found. The idea is that we recognize the mismatched character and find the last possible occurrence of the
+character in the pattern so that that the two characters are inline. And we shift accordingly.
+
+=============================
+=   Answers To Questions    =
+=============================
+
+1.
+the intuition is that we can look at a substring from index to n for each index from 0 to n - 1
+therefore there should be n suffixes to a string of length n.
+2.
+for each index from 0 to length of text - length of pattern{
+    if(text[index : index + length of pattern] == pattern){
+        //found Match, do what you wanted to do with the match
+    }
+}
+lets choose: n = length of text, m = length of pattern
+the complexity is O(m * n) because for each index i from 0 to n-m we check if they are equal that take O(m)
+therefore the complexity is O(m * (n-m)) however when n >> m (that should be the case) then the complexity is
+O(m * n)
+

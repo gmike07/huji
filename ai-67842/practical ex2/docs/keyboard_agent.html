@@ -1,0 +1,65 @@
+<html>
+  <head>
+  <title>keyboard_agent.py</title>
+  </head>
+  <body>
+  <h3>keyboard_agent.py (<a href="../keyboard_agent.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: green; font-style: italic"># keyboard_agent.py
+# -----------------
+# Licensing Information: Please do not distribute or publish solutions to this
+# project. You are free to use and extend these projects for educational
+# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
+# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+# For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
+
+</span><span style="color: blue; font-weight: bold">from </span>game <span style="color: blue; font-weight: bold">import </span>Agent<span style="font-weight: bold">, </span>Action
+
+
+<span style="color: blue; font-weight: bold">class </span>KeyboardAgent<span style="font-weight: bold">(</span>Agent<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    An agent controlled by the keyboard.
+    """
+    </span>LEFT_KEY <span style="font-weight: bold">= </span><span style="color: red">'a'
+    </span>RIGHT_KEY <span style="font-weight: bold">= </span><span style="color: red">'d'
+    </span>UP_KEY <span style="font-weight: bold">= </span><span style="color: red">'w'
+    </span>DOWN_KEY <span style="font-weight: bold">= </span><span style="color: red">'s'
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_window<span style="font-weight: bold">):
+        </span>super<span style="font-weight: bold">().</span>__init__<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys <span style="font-weight: bold">= []
+        </span>tk_window<span style="font-weight: bold">.</span>subscribe_to_keyboard_pressed<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>listener<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tk_window <span style="font-weight: bold">= </span>tk_window
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_stop <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+    def </span>get_action<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_stop <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+        </span>move <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_get_move<span style="font-weight: bold">(</span>state<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">while </span>move <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None </span><span style="color: blue; font-weight: bold">and not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_stop<span style="font-weight: bold">:
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tk_window<span style="font-weight: bold">.</span>mainloop_iteration<span style="font-weight: bold">()
+            </span>move <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_get_move<span style="font-weight: bold">(</span>state<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_stop<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return </span>Action<span style="font-weight: bold">.</span>STOP
+        <span style="color: blue; font-weight: bold">return </span>move
+
+    <span style="color: blue; font-weight: bold">def </span>stop_running<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_should_stop <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+    def </span>_get_move<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span>move <span style="font-weight: bold">= </span><span style="color: blue">None
+        </span>legal_actions <span style="font-weight: bold">= </span>state<span style="font-weight: bold">.</span>get_agent_legal_actions<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">if </span>Action<span style="font-weight: bold">.</span>LEFT <span style="color: blue; font-weight: bold">in </span>legal_actions <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>LEFT_KEY <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys <span style="color: blue; font-weight: bold">or </span><span style="color: red">'Left' </span><span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys<span style="font-weight: bold">):  </span>move <span style="font-weight: bold">= </span>Action<span style="font-weight: bold">.</span>LEFT
+        <span style="color: blue; font-weight: bold">if </span>Action<span style="font-weight: bold">.</span>RIGHT <span style="color: blue; font-weight: bold">in </span>legal_actions <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>RIGHT_KEY <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys <span style="color: blue; font-weight: bold">or </span><span style="color: red">'Right' </span><span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys<span style="font-weight: bold">):  </span>move <span style="font-weight: bold">= </span>Action<span style="font-weight: bold">.</span>RIGHT
+        <span style="color: blue; font-weight: bold">if </span>Action<span style="font-weight: bold">.</span>UP <span style="color: blue; font-weight: bold">in </span>legal_actions <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>UP_KEY <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys <span style="color: blue; font-weight: bold">or </span><span style="color: red">'Up' </span><span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys<span style="font-weight: bold">):  </span>move <span style="font-weight: bold">= </span>Action<span style="font-weight: bold">.</span>UP
+        <span style="color: blue; font-weight: bold">if </span>Action<span style="font-weight: bold">.</span>DOWN <span style="color: blue; font-weight: bold">in </span>legal_actions <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>DOWN_KEY <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys <span style="color: blue; font-weight: bold">or </span><span style="color: red">'Down' </span><span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys<span style="font-weight: bold">):  </span>move <span style="font-weight: bold">= </span>Action<span style="font-weight: bold">.</span>DOWN
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>keys <span style="font-weight: bold">= []
+        </span><span style="color: blue; font-weight: bold">return </span>move
+
+    <span style="color: blue; font-weight: bold">def </span>listener<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>keys<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>tk_event<span style="font-weight: bold">.</span>keysym<span style="font-weight: bold">)
+</span>
+  </pre>
+  </body>
+  </html>
+  

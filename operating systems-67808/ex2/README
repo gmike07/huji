@@ -1,0 +1,53 @@
+mikeg, meitar
+Mike Greenbaum (211747639), Meitar Sela (322396243)
+EX: 2
+
+FILES:
+uthreads.cpp -- a file that has the implementation of the uthreads library
+Scheduler.cpp -- a file that is responsible for the scheduling operations.
+Scheduler.h -- a header file for scheduler.cpp.
+Helper.cpp -- a file that contains utility functions.
+Helper.h -- a header file for helper.cpp.
+Thread.cpp -- a file that is responsible for handling one thread.
+Thread.h -- a header file for Thread.cpp.
+Makefile -- implement the make operation
+README -- this file :)
+
+REMARKS:
+These are some remarks that
+I want the graders to know
+about this submission.
+
+ANSWERS - PART 2:
+
+Q1:
+
+User level threads can be used for servers. User level threads are very easy to manage and create
+(small overhead), but can use only one processor at a time. Therefore, for a server that needs to
+do a big amount of tasks at once, and the tasks does not require a strong CPU power - user level
+threads is the perfect choice. Also, It is important to remark that the threads can communicate with
+each other because they have shared information, which is also an important quality for some servers.
+
+Q2:
+
+advantages:
+* information between tabs is not shared.
+
+disadvanteges:
+* managing and creating tabs will be faster and easier with kernel-level threads.
+
+Q3:
+by writing the command strace kill 9521 we killed the process of shotwell.
+When we wrote the command in the terminal, using the keyboard, there were interrupts sent from the keyboard to inform
+the OS what we write which informs the terminal. When we pressed Enter, The terminal sent the signal SIGTERM with id 9251
+to the OS and then the OS looked for the correct process, and then sends the signal to the process of shotwell.
+Then, Shotwell kills itself and finishes running.
+
+Q4:
+
+Real time - measures the actual time in the world.
+Virtual time - measures "computer time", a time it takes for the computer to do a single action.
+Can depend on computer heat and other factors, therefore it is not constant.
+
+Real time - when you want to set an alarm in the morning, you use real time.
+When you want to measure a threads life - you use virtual time.

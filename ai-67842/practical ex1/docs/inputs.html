@@ -1,0 +1,54 @@
+<html>
+  <head>
+  <title>inputs.py</title>
+  </head>
+  <body>
+  <h3>inputs.py (<a href="../inputs.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">class </span>Input<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    The Input class defines an interface for the game engine to get input
+    from the players
+
+    Child classes can use GUI input, CLI input, AI, etc... to produce moves
+    """
+
+    </span>input_error_string <span style="font-weight: bold">= </span><span style="color: red">"Error: using base input class"
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_move<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">, </span>board<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Main per-turn function.
+
+        Arguments:
+        - player: Which player you are
+        - board: A Board object with the current game state
+        - pieces: 4 True/False lists describing which pieces each player has left
+
+        Return a Move object if you want to play that move or None if you want
+        to pass instead. Passing will be your final move.
+
+        If the returned Move object is illegal, then getMove() will be called
+        again with the same arguments.
+        """
+        </span><span style="color: blue; font-weight: bold">raise </span>NotImplementedError<span style="font-weight: bold">(</span>Input<span style="font-weight: bold">.</span>input_error_string<span style="font-weight: bold">)
+
+
+</span><span style="color: blue; font-weight: bold">class </span>RandomInput<span style="font-weight: bold">(</span>Input<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""RandomInput players choose random moves (equally distributed over piece
+    number, x/y, and rotation/flip)
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_move<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">, </span>board<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">import </span>random
+
+        move_list <span style="font-weight: bold">= </span>board<span style="font-weight: bold">.</span>get_legal_moves<span style="font-weight: bold">(</span>player<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">if </span>move_list<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return </span>move_list<span style="font-weight: bold">[</span>random<span style="font-weight: bold">.</span>randint<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">, </span>len<span style="font-weight: bold">(</span>move_list<span style="font-weight: bold">) - </span><span style="color: red">1</span><span style="font-weight: bold">)]
+        </span><span style="color: green; font-style: italic"># else
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">None
+</span>
+  </pre>
+  </body>
+  </html>
+  

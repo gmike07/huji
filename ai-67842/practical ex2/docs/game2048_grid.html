@@ -1,0 +1,2142 @@
+<html>
+  <head>
+  <title>game2048_grid.py</title>
+  </head>
+  <body>
+  <h3>game2048_grid.py (<a href="../game2048_grid.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: green; font-style: italic">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+</span><span style="color: darkred">"""
+    tkGAME - all-in-one Game library for Tkinter
+
+    Gabriele Cirulli's 2048 puzzle game
+
+    Python3-Tkinter port by Raphaël Seban &lt;motus@laposte.net&gt;
+
+    Copyright (c) 2014+ Raphaël Seban for the pr
+    esent code
+
+    This program is free software: you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+    General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.
+
+    If not, see http://www.gnu.org/licenses/
+"""
+
+</span><span style="color: green; font-style: italic"># lib imports
+</span><span style="color: blue; font-weight: bold">import </span>numpy as np
+<span style="color: blue; font-weight: bold">import </span>random
+
+<span style="color: blue; font-weight: bold">import </span>tkinter as TK
+
+<span style="color: blue; font-weight: bold">from </span>tkinter <span style="color: blue; font-weight: bold">import </span>ttk
+
+<span style="color: blue; font-weight: bold">import </span>game_grid as GG
+
+
+<span style="color: blue; font-weight: bold">class </span>Game2048Grid<span style="font-weight: bold">(</span>GG<span style="font-weight: bold">.</span>GameGrid<span style="font-weight: bold">):
+    </span><span style="color: darkred">r"""
+        Gabriele Cirulli's 2048 puzzle game;
+
+        Python3-Tkinter port by Raphaël Seban;
+
+        GameGrid main component;
+    """
+
+    </span><span style="color: green; font-style: italic"># background color
+    # this overrides superclass member
+
+    </span>BGCOLOR <span style="font-weight: bold">= </span><span style="color: red">"#ccc0b3"
+
+    </span><span style="color: green; font-style: italic"># foreground color
+    # this overrides superclass member
+
+    </span>FGCOLOR <span style="font-weight: bold">= </span><span style="color: red">"#bbada0"
+
+    </span><span style="color: green; font-style: italic"># nb of rows and columns in grid
+    # this overrides superclass member
+
+    </span>ROWS <span style="font-weight: bold">= </span>COLUMNS <span style="font-weight: bold">= </span><span style="color: red">4
+
+    </span><span style="color: green; font-style: italic"># thickness of a line stroke
+    # this overrides superclass member
+
+    </span>THICKNESS <span style="font-weight: bold">= </span><span style="color: red">8  </span><span style="color: green; font-style: italic"># pixels
+
+    # default global config values
+    # this overrides superclass member
+
+    </span>CONFIG <span style="font-weight: bold">= {
+
+        </span><span style="color: red">"background"</span><span style="font-weight: bold">: </span>BGCOLOR<span style="font-weight: bold">,
+
+        </span><span style="color: red">"highlightthickness"</span><span style="font-weight: bold">: </span><span style="color: red">0</span><span style="font-weight: bold">,
+
+        </span><span style="color: red">"width"</span><span style="font-weight: bold">: </span><span style="color: red">400</span><span style="font-weight: bold">,  </span><span style="color: green; font-style: italic"># pixels
+
+        </span><span style="color: red">"height"</span><span style="font-weight: bold">: </span><span style="color: red">400</span><span style="font-weight: bold">,  </span><span style="color: green; font-style: italic"># pixels
+
+    </span><span style="font-weight: bold">}  </span><span style="color: green; font-style: italic"># end of CONFIG
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>master<span style="font-weight: bold">, </span>tile_animation<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span>GG<span style="font-weight: bold">.</span>GameGrid<span style="font-weight: bold">.</span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>master<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tile_animation <span style="font-weight: bold">= </span>tile_animation
+
+    <span style="color: blue; font-weight: bold">def </span>animate_rectangle<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            GAME OVER animation sequence;
+
+            background rectangle animation;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag_raise<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>TK<span style="font-weight: bold">.</span>ALL<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>stipple<span style="font-weight: bold">=</span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_text_game_over<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            GAME OVER animation sequence;
+
+            'Game Over' text animation;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag_raise<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>TK<span style="font-weight: bold">.</span>ALL<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span>value<span style="font-weight: bold">, </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>NORMAL<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_text_try_again<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            GAME OVER animation sequence;
+
+            'Try again' text animation;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag_raise<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>TK<span style="font-weight: bold">.</span>ALL<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span>value<span style="font-weight: bold">, </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>NORMAL<span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">if </span>value <span style="font-weight: bold">== </span><span style="color: red">"#ffffff"</span><span style="font-weight: bold">:
+            </span>_btn <span style="font-weight: bold">= </span>ttk<span style="font-weight: bold">.</span>Button<span style="font-weight: bold">(
+                </span><span style="color: blue">self</span><span style="font-weight: bold">,
+                </span>text<span style="font-weight: bold">=</span><span style="color: red">"Play"</span><span style="font-weight: bold">,
+                </span>command<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>new_game
+            <span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_window<span style="font-weight: bold">(
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqwidth<span style="font-weight: bold">() // </span><span style="color: red">2</span><span style="font-weight: bold">,
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqheight<span style="font-weight: bold">() // </span><span style="color: red">2 </span><span style="font-weight: bold">+ </span><span style="color: red">65</span><span style="font-weight: bold">,
+                </span>window<span style="font-weight: bold">=</span>_btn<span style="font-weight: bold">,
+            )
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>fuse_tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>into_tile<span style="font-weight: bold">, </span>void_tile<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            fuses tile @void_tile into @into_tile and then destroys
+            void_tile;
+
+            return True on success, False otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># shortcuts
+
+        </span>_into<span style="font-weight: bold">, </span>_void <span style="font-weight: bold">= </span>into_tile<span style="font-weight: bold">, </span>void_tile
+
+        <span style="color: green; font-style: italic"># tiles are matching?
+
+        </span><span style="color: blue; font-weight: bold">if </span>_into <span style="color: blue; font-weight: bold">and </span>_void <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(</span>_into<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>_void<span style="font-weight: bold">.</span>value<span style="font-weight: bold">):
+            </span><span style="color: green; font-style: italic"># init new value
+
+            </span>_into<span style="font-weight: bold">.</span>value <span style="font-weight: bold">+= </span>_void<span style="font-weight: bold">.</span>value
+
+            <span style="color: green; font-style: italic"># update score with new value
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>update_score<span style="font-weight: bold">(</span>_into<span style="font-weight: bold">.</span>value<span style="font-weight: bold">)
+
+            </span><span style="color: green; font-style: italic"># update tile appearance
+
+            </span>_into<span style="font-weight: bold">.</span>update_display<span style="font-weight: bold">()
+
+            </span><span style="color: green; font-style: italic"># remove void tile
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>remove_object_at<span style="font-weight: bold">(*</span>_void<span style="font-weight: bold">.</span>row_column<span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>remove_tile<span style="font-weight: bold">(</span>_void<span style="font-weight: bold">.</span>id<span style="font-weight: bold">)
+
+            </span>_void<span style="font-weight: bold">.</span>animate_remove<span style="font-weight: bold">()
+
+            </span><span style="color: green; font-style: italic"># op success
+
+            </span><span style="color: blue; font-weight: bold">return True
+
+        </span><span style="color: green; font-style: italic"># end if - matching tiles
+
+        # op failure
+
+        </span><span style="color: blue; font-weight: bold">return False
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>game_over<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            shows up game over screen and offers to try again;
+        """
+
+        </span><span style="color: green; font-style: italic"># disconnect keypress events
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>unbind_all<span style="font-weight: bold">(</span><span style="color: red">"&lt;Key&gt;"</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># grid dims
+
+        </span>_grid_width <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqwidth<span style="font-weight: bold">()
+
+        </span>_grid_height <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqheight<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># object inits
+
+        </span>_rect_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_rectangle<span style="font-weight: bold">(
+
+            </span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">, </span>_grid_width<span style="font-weight: bold">, </span>_grid_height<span style="font-weight: bold">,
+
+            </span>fill<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>FGCOLOR<span style="font-weight: bold">, </span>width<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># animation init
+
+        </span>_anim_rect <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">)
+
+        </span>_anim_rect<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_rectangle<span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">=</span>_rect_id<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span>_anim_rect<span style="font-weight: bold">.</span>start<span style="font-weight: bold">(</span>sequence<span style="font-weight: bold">=(</span><span style="color: red">"gray12"</span><span style="font-weight: bold">, </span><span style="color: red">"gray25"</span><span style="font-weight: bold">, </span><span style="color: red">"gray50"</span><span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># object inits - GAME OVER text
+
+        </span>_text_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_text<span style="font-weight: bold">(
+
+            </span>_grid_width <span style="font-weight: bold">// </span><span style="color: red">2</span><span style="font-weight: bold">, </span>_grid_height <span style="font-weight: bold">// </span><span style="color: red">2 </span><span style="font-weight: bold">- </span><span style="color: red">25</span><span style="font-weight: bold">,
+
+            </span>text<span style="font-weight: bold">=</span><span style="color: red">"GAME OVER"</span><span style="font-weight: bold">, </span>font<span style="font-weight: bold">=</span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span><span style="color: red">"white"</span><span style="font-weight: bold">,
+
+            </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>HIDDEN<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># animation init
+
+        </span>_anim_text1 <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">)
+
+        </span>_anim_text1<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_text_game_over<span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">=</span>_text_id<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span>_anim_text1<span style="font-weight: bold">.</span>start_after<span style="font-weight: bold">(
+
+            </span>delay<span style="font-weight: bold">=</span><span style="color: red">800</span><span style="font-weight: bold">, </span>interval<span style="font-weight: bold">=</span><span style="color: red">50</span><span style="font-weight: bold">,
+
+            </span>sequence<span style="font-weight: bold">=(</span><span style="color: red">"#c9bdb4"</span><span style="font-weight: bold">, </span><span style="color: red">"#d0c5be"</span><span style="font-weight: bold">, </span><span style="color: red">"#d7cdc8"</span><span style="font-weight: bold">, </span><span style="color: red">"#ded5d2"</span><span style="font-weight: bold">,
+                      </span><span style="color: red">"#e5dddc"</span><span style="font-weight: bold">, </span><span style="color: red">"#ece5e6"</span><span style="font-weight: bold">, </span><span style="color: red">"#f3edf0"</span><span style="font-weight: bold">, </span><span style="color: red">"#ffffff"</span><span style="font-weight: bold">),
+        )
+
+        </span><span style="color: green; font-style: italic"># object inits - Try Again text
+
+        </span>_text_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_text<span style="font-weight: bold">(
+
+            </span>_grid_width <span style="font-weight: bold">// </span><span style="color: red">2</span><span style="font-weight: bold">, </span>_grid_height <span style="font-weight: bold">// </span><span style="color: red">2 </span><span style="font-weight: bold">+ </span><span style="color: red">30</span><span style="font-weight: bold">,
+
+            </span>text<span style="font-weight: bold">=</span><span style="color: red">"Try again"</span><span style="font-weight: bold">, </span>font<span style="font-weight: bold">=</span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span><span style="color: red">"white"</span><span style="font-weight: bold">,
+
+            </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>HIDDEN<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># animation init
+
+        </span>_anim_text2 <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">)
+
+        </span>_anim_text2<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_text_try_again<span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">=</span>_text_id<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span>_anim_text2<span style="font-weight: bold">.</span>start_after<span style="font-weight: bold">(
+
+            </span>delay<span style="font-weight: bold">=</span><span style="color: red">1600</span><span style="font-weight: bold">, </span>interval<span style="font-weight: bold">=</span><span style="color: red">80</span><span style="font-weight: bold">,
+
+            </span>sequence<span style="font-weight: bold">=(</span><span style="color: red">"#c9bdb4"</span><span style="font-weight: bold">, </span><span style="color: red">"#d0c5be"</span><span style="font-weight: bold">, </span><span style="color: red">"#d7cdc8"</span><span style="font-weight: bold">, </span><span style="color: red">"#ded5d2"</span><span style="font-weight: bold">,
+                      </span><span style="color: red">"#e5dddc"</span><span style="font-weight: bold">, </span><span style="color: red">"#ece5e6"</span><span style="font-weight: bold">, </span><span style="color: red">"#f3edf0"</span><span style="font-weight: bold">, </span><span style="color: red">"#ffffff"</span><span style="font-weight: bold">),
+        )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_available_box<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            looks for an empty box location;
+        """
+
+        </span><span style="color: green; font-style: italic"># no more room in grid?
+
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>is_full<span style="font-weight: bold">():
+
+            </span><span style="color: blue; font-weight: bold">raise </span>GG<span style="font-weight: bold">.</span>GridError<span style="font-weight: bold">(</span><span style="color: red">"no more room in grid"</span><span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+
+            </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+            <span style="color: blue; font-weight: bold">while True</span><span style="font-weight: bold">:
+
+                </span>_row <span style="font-weight: bold">= </span>random<span style="font-weight: bold">.</span>randrange<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">)
+
+                </span>_column <span style="font-weight: bold">= </span>random<span style="font-weight: bold">.</span>randrange<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">)
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">):
+                    </span><span style="color: blue; font-weight: bold">break
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end while
+
+            </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if - no more room
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>init_widget<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            widget's main inits;
+        """
+
+        </span><span style="color: green; font-style: italic"># member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_cvar <span style="font-weight: bold">= </span>TK<span style="font-weight: bold">.</span>IntVar<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback <span style="font-weight: bold">= </span><span style="color: blue">None
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tile<span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves tile to new (row, column) position;
+        """
+
+        </span><span style="color: green; font-style: italic"># param controls
+
+        </span><span style="color: blue; font-weight: bold">if </span>tile<span style="font-weight: bold">:
+            </span><span style="color: green; font-style: italic"># move into matrix
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>move_object<span style="font-weight: bold">(</span>tile<span style="font-weight: bold">.</span>row_column<span style="font-weight: bold">, (</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">))
+
+            </span><span style="color: green; font-style: italic"># make some animation and updates
+
+            </span>tile<span style="font-weight: bold">.</span>animate_move_to<span style="font-weight: bold">(</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_down<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles downward;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on columns
+
+        </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_row2 <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_row <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row2<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_empty<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">] - </span><span style="color: red">1</span><span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_left<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles to the left;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on rows
+
+        </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_column <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_col<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is just near last one
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_empty<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">] + </span><span style="color: red">1</span><span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_right<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles to the right;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on rows
+
+        </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_column <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_col<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_empty<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">] - </span><span style="color: red">1</span><span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_up<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles upward;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on columns
+
+        </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_row2 <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_row <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row2<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_empty<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">] + </span><span style="color: red">1</span><span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>set_game_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>game_state<span style="font-weight: bold">):
+        </span>rows<span style="font-weight: bold">, </span>cols <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>where<span style="font-weight: bold">(</span>game_state<span style="font-weight: bold">.</span>board <span style="font-weight: bold">!= </span><span style="color: red">0</span><span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>rows<span style="font-weight: bold">.</span>size<span style="font-weight: bold">):
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>insert_tile<span style="font-weight: bold">(</span>rows<span style="font-weight: bold">[</span>i<span style="font-weight: bold">], </span>cols<span style="font-weight: bold">[</span>i<span style="font-weight: bold">], </span>game_state<span style="font-weight: bold">.</span>board<span style="font-weight: bold">[</span>rows<span style="font-weight: bold">[</span>i<span style="font-weight: bold">], </span>cols<span style="font-weight: bold">[</span>i<span style="font-weight: bold">]])
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>no_more_hints<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            determines if game is no more playable;
+
+            returns True if game over, False otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># verify only at the end
+
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>is_full<span style="font-weight: bold">():
+
+            </span><span style="color: green; font-style: italic"># enter the Matrix!
+
+            </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+            <span style="color: green; font-style: italic"># loop on rows
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># loop on columns
+
+                </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+                    </span><span style="color: green; font-style: italic"># try to find at least *one* fusion to make
+
+                    </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">)
+
+                    </span>_tile3 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># compare horizontally
+
+                    </span><span style="color: blue; font-weight: bold">if </span>_tile1 <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(
+                            (</span>_tile2 <span style="color: blue; font-weight: bold">and </span>_tile1<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>_tile2<span style="font-weight: bold">.</span>value<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">or
+                            </span><span style="font-weight: bold">(</span>_tile3 <span style="color: blue; font-weight: bold">and </span>_tile1<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>_tile3<span style="font-weight: bold">.</span>value<span style="font-weight: bold">)):
+                        </span><span style="color: green; font-style: italic"># the show must go on!
+
+                        </span><span style="color: blue; font-weight: bold">return False
+
+                    </span><span style="color: green; font-style: italic"># end if
+
+                # end for - columns
+
+            # end for - rows
+
+            # game is over!
+
+            </span><span style="color: blue; font-weight: bold">return True
+
+        </span><span style="color: green; font-style: italic"># end if - no more room
+
+        # the show must go on!
+
+        </span><span style="color: blue; font-weight: bold">return False
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>insert_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span>_tile <span style="font-weight: bold">= </span>Game2048GridTile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tile_animation<span style="font-weight: bold">)
+        </span>_tile<span style="font-weight: bold">.</span>animate_show<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>register_tile<span style="font-weight: bold">(</span>_tile<span style="font-weight: bold">.</span>id<span style="font-weight: bold">, </span>_tile<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>add<span style="font-weight: bold">(</span>_tile<span style="font-weight: bold">, *</span>_tile<span style="font-weight: bold">.</span>row_column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>set_score_callback<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>callback<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            sets up a callable function/method to use when updating
+            score values;
+        """
+
+        </span><span style="color: blue; font-weight: bold">if </span>callable<span style="font-weight: bold">(</span>callback<span style="font-weight: bold">):
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback <span style="font-weight: bold">= </span>callback
+
+        <span style="color: blue; font-weight: bold">elif </span>raise_error<span style="font-weight: bold">:
+
+            </span><span style="color: blue; font-weight: bold">raise </span>TypeError<span style="font-weight: bold">(
+
+                </span><span style="color: red">"callback parameter *MUST* be a callable object."
+            </span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>tiles_match<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tile1<span style="font-weight: bold">, </span>tile2<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            determines if tiles have the same value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span>tile1 <span style="color: blue; font-weight: bold">and </span>tile2 <span style="color: blue; font-weight: bold">and </span>tile1<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>tile2<span style="font-weight: bold">.</span>value
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>update_score<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">, </span>mode<span style="font-weight: bold">=</span><span style="color: red">"add"</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            updates score along @value and @mode;
+        """
+
+        </span><span style="color: green; font-style: italic"># object is callable?
+
+        </span><span style="color: blue; font-weight: bold">if </span>callable<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback<span style="font-weight: bold">):
+            </span><span style="color: green; font-style: italic"># update score through callback
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback<span style="font-weight: bold">(</span>value<span style="font-weight: bold">, </span>mode<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+
+# end class Game2048Grid
+
+
+# subcomponent class def
+
+</span><span style="color: blue; font-weight: bold">class </span>Game2048GridTile<span style="font-weight: bold">(</span>GG<span style="font-weight: bold">.</span>GridTile<span style="font-weight: bold">):
+    </span><span style="color: darkred">r"""
+        GridTile - GameGrid subcomponent;
+    """
+
+    </span><span style="color: green; font-style: italic"># GridTile colors along internal value
+
+    # color pairs are (background_color, foreground_color)
+
+    </span>COLORS <span style="font-weight: bold">= {
+
+        </span><span style="color: red">2</span><span style="font-weight: bold">: (</span><span style="color: red">"#eee4da"</span><span style="font-weight: bold">, </span><span style="color: red">"#776e65"</span><span style="font-weight: bold">),
+        </span><span style="color: red">4</span><span style="font-weight: bold">: (</span><span style="color: red">"#ede0c8"</span><span style="font-weight: bold">, </span><span style="color: red">"#776e65"</span><span style="font-weight: bold">),
+        </span><span style="color: red">8</span><span style="font-weight: bold">: (</span><span style="color: red">"#f2b179"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">16</span><span style="font-weight: bold">: (</span><span style="color: red">"#f59563"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">32</span><span style="font-weight: bold">: (</span><span style="color: red">"#f67c5f"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">64</span><span style="font-weight: bold">: (</span><span style="color: red">"#f65e3b"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">128</span><span style="font-weight: bold">: (</span><span style="color: red">"#edcf72"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">256</span><span style="font-weight: bold">: (</span><span style="color: red">"#edcc61"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">512</span><span style="font-weight: bold">: (</span><span style="color: red">"#edc850"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">1024</span><span style="font-weight: bold">: (</span><span style="color: red">"#edc53f"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">2048</span><span style="font-weight: bold">: (</span><span style="color: red">"#edc22e"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">4096</span><span style="font-weight: bold">: (</span><span style="color: red">"#ed952e"</span><span style="font-weight: bold">, </span><span style="color: red">"#ffe0b7"</span><span style="font-weight: bold">),
+        </span><span style="color: red">8192</span><span style="font-weight: bold">: (</span><span style="color: red">"#d2ff50"</span><span style="font-weight: bold">, </span><span style="color: red">"#bb6790"</span><span style="font-weight: bold">),
+        </span><span style="color: red">16384</span><span style="font-weight: bold">: (</span><span style="color: red">"yellow"</span><span style="font-weight: bold">, </span><span style="color: red">"chocolate"</span><span style="font-weight: bold">),
+        </span><span style="color: red">32768</span><span style="font-weight: bold">: (</span><span style="color: red">"orange"</span><span style="font-weight: bold">, </span><span style="color: red">"yellow"</span><span style="font-weight: bold">),
+        </span><span style="color: red">65536</span><span style="font-weight: bold">: (</span><span style="color: red">"red"</span><span style="font-weight: bold">, </span><span style="color: red">"white"</span><span style="font-weight: bold">),
+
+    }  </span><span style="color: green; font-style: italic"># end of COLORS
+
+    # GridTile fonts along internal value
+
+    </span>FONTS <span style="font-weight: bold">= {
+
+        </span><span style="color: red">2</span><span style="font-weight: bold">: </span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">4</span><span style="font-weight: bold">: </span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">8</span><span style="font-weight: bold">: </span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">16</span><span style="font-weight: bold">: </span><span style="color: red">"sans 28 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">32</span><span style="font-weight: bold">: </span><span style="color: red">"sans 28 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">64</span><span style="font-weight: bold">: </span><span style="color: red">"sans 28 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">128</span><span style="font-weight: bold">: </span><span style="color: red">"sans 24 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">256</span><span style="font-weight: bold">: </span><span style="color: red">"sans 24 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">512</span><span style="font-weight: bold">: </span><span style="color: red">"sans 24 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">1024</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">2048</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">4096</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">8192</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">16384</span><span style="font-weight: bold">: </span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">32768</span><span style="font-weight: bold">: </span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">65536</span><span style="font-weight: bold">: </span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">,
+
+    }  </span><span style="color: green; font-style: italic"># end of FONTS
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_move_to<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            animates tile movement to (row, column) destination;
+
+            updates tile's internal data;
+        """
+
+        </span><span style="color: green; font-style: italic"># FIXME: implement true animation by here?
+
+        </span>_x0<span style="font-weight: bold">, </span>_y0 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_origin
+
+        _x1<span style="font-weight: bold">, </span>_y1 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>xy_left_top<span style="font-weight: bold">(</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># move tile on canvas
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>move<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">, (</span>_x1 <span style="font-weight: bold">- </span>_x0<span style="font-weight: bold">), (</span>_y1 <span style="font-weight: bold">- </span>_y0<span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># update data
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>column <span style="font-weight: bold">= </span>row<span style="font-weight: bold">, </span>column
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_tile_popup<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            tile popup animation;
+        """
+
+        </span><span style="color: green; font-style: italic"># init center point
+
+        </span>_x0<span style="font-weight: bold">, </span>_y0 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_center
+
+        <span style="color: green; font-style: italic"># make animation
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>scale<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>id<span style="font-weight: bold">, </span>_x0<span style="font-weight: bold">, </span>_y0<span style="font-weight: bold">, </span>value<span style="font-weight: bold">, </span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_remove<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            animates a grid removal;
+        """
+
+        </span><span style="color: green; font-style: italic"># FIXME: implement true animation by here?
+
+        # remove graphics from canvas
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>delete<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_show<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            animates tile showing up;
+        """
+
+        </span><span style="color: green; font-style: italic"># create tile
+
+        </span>_x<span style="font-weight: bold">, </span>_y <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_origin
+
+        _width<span style="font-weight: bold">, </span>_height <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>size
+
+        _bg<span style="font-weight: bold">, </span>_fg <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_colors<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>create_rectangle<span style="font-weight: bold">(
+
+            </span>_x<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">, (</span>_x <span style="font-weight: bold">+ </span>_width<span style="font-weight: bold">), (</span>_y <span style="font-weight: bold">+ </span>_height<span style="font-weight: bold">),
+
+            </span>fill<span style="font-weight: bold">=</span>_bg<span style="font-weight: bold">, </span>width<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">, </span>tags<span style="font-weight: bold">=(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">, </span><span style="color: red">"tiles"</span><span style="font-weight: bold">),
+        )
+
+        </span><span style="color: green; font-style: italic"># set value text
+
+        </span>_font <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_font<span style="font-weight: bold">()
+
+        </span>_x<span style="font-weight: bold">, </span>_y <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_center
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>value_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>create_text<span style="font-weight: bold">(
+
+            </span>_x<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">, </span>text<span style="font-weight: bold">=</span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">),
+
+            </span>fill<span style="font-weight: bold">=</span>_fg<span style="font-weight: bold">, </span>font<span style="font-weight: bold">=</span>_font<span style="font-weight: bold">, </span>tags<span style="font-weight: bold">=(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">, </span><span style="color: red">"values"</span><span style="font-weight: bold">),
+        )
+
+        </span><span style="color: green; font-style: italic"># init animation
+
+        </span>_anim_tile <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">()
+
+        </span>_anim_tile<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_tile_popup<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span>_anim_tile<span style="font-weight: bold">.</span>start<span style="font-weight: bold">(
+
+            </span>interval<span style="font-weight: bold">=</span><span style="color: red">50</span><span style="font-weight: bold">, </span>sequence<span style="font-weight: bold">=(</span><span style="color: red">6 </span><span style="font-weight: bold">/ </span><span style="color: red">5</span><span style="font-weight: bold">, </span><span style="color: red">6 </span><span style="font-weight: bold">/ </span><span style="color: red">5</span><span style="font-weight: bold">, </span><span style="color: red">5 </span><span style="font-weight: bold">/ </span><span style="color: red">6</span><span style="font-weight: bold">, </span><span style="color: red">5 </span><span style="font-weight: bold">/ </span><span style="color: red">6</span><span style="font-weight: bold">),
+        )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_value_colors<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns (background, foreground) color pair along
+            internal tile value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>COLORS<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">, (</span><span style="color: red">"red"</span><span style="font-weight: bold">, </span><span style="color: red">"yellow"</span><span style="font-weight: bold">))
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_value_font<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns font string along internal tile value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>FONTS<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">, </span><span style="color: red">"sans 10 bold"</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>update_display<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            updates value display;Game2048GridTile
+        """
+
+        </span><span style="color: green; font-style: italic"># new colors
+
+        </span>_bg<span style="font-weight: bold">, </span>_fg <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_colors<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># update tile colors
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>id<span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span>_bg<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># update tile text and colors
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value_id<span style="font-weight: bold">,
+
+            </span>text<span style="font-weight: bold">=</span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">),
+
+            </span>font<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_font<span style="font-weight: bold">(),
+
+            </span>fill<span style="font-weight: bold">=</span>_fg<span style="font-weight: bold">,
+        )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+
+# end class Game2048GridTile
+
+
+</span><span style="color: blue; font-weight: bold">class </span>grid_clone<span style="font-weight: bold">():
+    </span><span style="color: darkred">r"""
+        Gabriele Cirulli's 2048 puzzle game;
+
+        Python3-Tkinter port by Raphaël Seban;
+
+        GameGrid main component;
+    """
+
+    </span><span style="color: green; font-style: italic"># background color
+    # this overrides superclass member
+
+    </span>BGCOLOR <span style="font-weight: bold">= </span><span style="color: red">"#ccc0b3"
+
+    </span><span style="color: green; font-style: italic"># foreground color
+    # this overrides superclass member
+
+    </span>FGCOLOR <span style="font-weight: bold">= </span><span style="color: red">"#bbada0"
+
+    </span><span style="color: green; font-style: italic"># nb of rows and columns in grid
+    # this overrides superclass member
+
+    </span>ROWS <span style="font-weight: bold">= </span>COLUMNS <span style="font-weight: bold">= </span><span style="color: red">4
+
+    </span><span style="color: green; font-style: italic"># thickness of a line stroke
+    # this overrides superclass member
+
+    </span>THICKNESS <span style="font-weight: bold">= </span><span style="color: red">8  </span><span style="color: green; font-style: italic"># pixels
+
+    # default global config values
+    # this overrides superclass member
+
+    </span>CONFIG <span style="font-weight: bold">= {
+
+        </span><span style="color: red">"background"</span><span style="font-weight: bold">: </span>BGCOLOR<span style="font-weight: bold">,
+
+        </span><span style="color: red">"highlightthickness"</span><span style="font-weight: bold">: </span><span style="color: red">0</span><span style="font-weight: bold">,
+
+        </span><span style="color: red">"width"</span><span style="font-weight: bold">: </span><span style="color: red">400</span><span style="font-weight: bold">,  </span><span style="color: green; font-style: italic"># pixels
+
+        </span><span style="color: red">"height"</span><span style="font-weight: bold">: </span><span style="color: red">400</span><span style="font-weight: bold">,  </span><span style="color: green; font-style: italic"># pixels
+
+    </span><span style="font-weight: bold">}  </span><span style="color: green; font-style: italic"># end of CONFIG
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_rectangle<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            GAME OVER animation sequence;
+
+            background rectangle animation;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag_raise<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>TK<span style="font-weight: bold">.</span>ALL<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>stipple<span style="font-weight: bold">=</span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_text_game_over<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            GAME OVER animation sequence;
+
+            'Game Over' text animation;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag_raise<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>TK<span style="font-weight: bold">.</span>ALL<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span>value<span style="font-weight: bold">, </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>NORMAL<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_text_try_again<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            GAME OVER animation sequence;
+
+            'Try again' text animation;
+        """
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag_raise<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>TK<span style="font-weight: bold">.</span>ALL<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span>item_id<span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span>value<span style="font-weight: bold">, </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>NORMAL<span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">if </span>value <span style="font-weight: bold">== </span><span style="color: red">"#ffffff"</span><span style="font-weight: bold">:
+            </span>_btn <span style="font-weight: bold">= </span>ttk<span style="font-weight: bold">.</span>Button<span style="font-weight: bold">(
+                </span><span style="color: blue">self</span><span style="font-weight: bold">,
+                </span>text<span style="font-weight: bold">=</span><span style="color: red">"Play"</span><span style="font-weight: bold">,
+                </span>command<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>new_game
+            <span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_window<span style="font-weight: bold">(
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqwidth<span style="font-weight: bold">() // </span><span style="color: red">2</span><span style="font-weight: bold">,
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqheight<span style="font-weight: bold">() // </span><span style="color: red">2 </span><span style="font-weight: bold">+ </span><span style="color: red">65</span><span style="font-weight: bold">,
+                </span>window<span style="font-weight: bold">=</span>_btn<span style="font-weight: bold">,
+            )
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>fuse_tiles<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>into_tile<span style="font-weight: bold">, </span>void_tile<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            fuses tile @void_tile into @into_tile and then destroys
+            void_tile;
+
+            return True on success, False otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># shortcuts
+
+        </span>_into<span style="font-weight: bold">, </span>_void <span style="font-weight: bold">= </span>into_tile<span style="font-weight: bold">, </span>void_tile
+
+        <span style="color: green; font-style: italic"># tiles are matching?
+
+        </span><span style="color: blue; font-weight: bold">if </span>_into <span style="color: blue; font-weight: bold">and </span>_void <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(</span>_into<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>_void<span style="font-weight: bold">.</span>value<span style="font-weight: bold">):
+            </span><span style="color: green; font-style: italic"># init new value
+
+            </span>_into<span style="font-weight: bold">.</span>value <span style="font-weight: bold">+= </span>_void<span style="font-weight: bold">.</span>value
+
+            <span style="color: green; font-style: italic"># update score with new value
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>update_score<span style="font-weight: bold">(</span>_into<span style="font-weight: bold">.</span>value<span style="font-weight: bold">)
+
+            </span><span style="color: green; font-style: italic"># update tile appearance
+
+            </span>_into<span style="font-weight: bold">.</span>update_display<span style="font-weight: bold">()
+
+            </span><span style="color: green; font-style: italic"># remove void tile
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>remove_object_at<span style="font-weight: bold">(*</span>_void<span style="font-weight: bold">.</span>row_column<span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>remove_tile<span style="font-weight: bold">(</span>_void<span style="font-weight: bold">.</span>id<span style="font-weight: bold">)
+
+            </span>_void<span style="font-weight: bold">.</span>animate_remove<span style="font-weight: bold">()
+
+            </span><span style="color: green; font-style: italic"># op success
+
+            </span><span style="color: blue; font-weight: bold">return True
+
+        </span><span style="color: green; font-style: italic"># end if - matching tiles
+
+        # op failure
+
+        </span><span style="color: blue; font-weight: bold">return False
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>game_over<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            shows up game over screen and offers to try again;
+        """
+
+        </span><span style="color: green; font-style: italic"># disconnect keypress events
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>unbind_all<span style="font-weight: bold">(</span><span style="color: red">"&lt;Key&gt;"</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># grid dims
+
+        </span>_grid_width <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqwidth<span style="font-weight: bold">()
+
+        </span>_grid_height <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>winfo_reqheight<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># object inits
+
+        </span>_rect_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_rectangle<span style="font-weight: bold">(
+
+            </span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">, </span>_grid_width<span style="font-weight: bold">, </span>_grid_height<span style="font-weight: bold">,
+
+            </span>fill<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>FGCOLOR<span style="font-weight: bold">, </span>width<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># animation init
+
+        </span>_anim_rect <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">)
+
+        </span>_anim_rect<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_rectangle<span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">=</span>_rect_id<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span>_anim_rect<span style="font-weight: bold">.</span>start<span style="font-weight: bold">(</span>sequence<span style="font-weight: bold">=(</span><span style="color: red">"gray12"</span><span style="font-weight: bold">, </span><span style="color: red">"gray25"</span><span style="font-weight: bold">, </span><span style="color: red">"gray50"</span><span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># object inits - GAME OVER text
+
+        </span>_text_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_text<span style="font-weight: bold">(
+
+            </span>_grid_width <span style="font-weight: bold">// </span><span style="color: red">2</span><span style="font-weight: bold">, </span>_grid_height <span style="font-weight: bold">// </span><span style="color: red">2 </span><span style="font-weight: bold">- </span><span style="color: red">25</span><span style="font-weight: bold">,
+
+            </span>text<span style="font-weight: bold">=</span><span style="color: red">"GAME OVER"</span><span style="font-weight: bold">, </span>font<span style="font-weight: bold">=</span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span><span style="color: red">"white"</span><span style="font-weight: bold">,
+
+            </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>HIDDEN<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># animation init
+
+        </span>_anim_text1 <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">)
+
+        </span>_anim_text1<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_text_game_over<span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">=</span>_text_id<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span>_anim_text1<span style="font-weight: bold">.</span>start_after<span style="font-weight: bold">(
+
+            </span>delay<span style="font-weight: bold">=</span><span style="color: red">800</span><span style="font-weight: bold">, </span>interval<span style="font-weight: bold">=</span><span style="color: red">50</span><span style="font-weight: bold">,
+
+            </span>sequence<span style="font-weight: bold">=(</span><span style="color: red">"#c9bdb4"</span><span style="font-weight: bold">, </span><span style="color: red">"#d0c5be"</span><span style="font-weight: bold">, </span><span style="color: red">"#d7cdc8"</span><span style="font-weight: bold">, </span><span style="color: red">"#ded5d2"</span><span style="font-weight: bold">,
+                      </span><span style="color: red">"#e5dddc"</span><span style="font-weight: bold">, </span><span style="color: red">"#ece5e6"</span><span style="font-weight: bold">, </span><span style="color: red">"#f3edf0"</span><span style="font-weight: bold">, </span><span style="color: red">"#ffffff"</span><span style="font-weight: bold">),
+        )
+
+        </span><span style="color: green; font-style: italic"># object inits - Try Again text
+
+        </span>_text_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>create_text<span style="font-weight: bold">(
+
+            </span>_grid_width <span style="font-weight: bold">// </span><span style="color: red">2</span><span style="font-weight: bold">, </span>_grid_height <span style="font-weight: bold">// </span><span style="color: red">2 </span><span style="font-weight: bold">+ </span><span style="color: red">30</span><span style="font-weight: bold">,
+
+            </span>text<span style="font-weight: bold">=</span><span style="color: red">"Try again"</span><span style="font-weight: bold">, </span>font<span style="font-weight: bold">=</span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span><span style="color: red">"white"</span><span style="font-weight: bold">,
+
+            </span>state<span style="font-weight: bold">=</span>TK<span style="font-weight: bold">.</span>HIDDEN<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># animation init
+
+        </span>_anim_text2 <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">)
+
+        </span>_anim_text2<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_text_try_again<span style="font-weight: bold">, </span>item_id<span style="font-weight: bold">=</span>_text_id<span style="font-weight: bold">,
+        )
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span>_anim_text2<span style="font-weight: bold">.</span>start_after<span style="font-weight: bold">(
+
+            </span>delay<span style="font-weight: bold">=</span><span style="color: red">1600</span><span style="font-weight: bold">, </span>interval<span style="font-weight: bold">=</span><span style="color: red">80</span><span style="font-weight: bold">,
+
+            </span>sequence<span style="font-weight: bold">=(</span><span style="color: red">"#c9bdb4"</span><span style="font-weight: bold">, </span><span style="color: red">"#d0c5be"</span><span style="font-weight: bold">, </span><span style="color: red">"#d7cdc8"</span><span style="font-weight: bold">, </span><span style="color: red">"#ded5d2"</span><span style="font-weight: bold">,
+                      </span><span style="color: red">"#e5dddc"</span><span style="font-weight: bold">, </span><span style="color: red">"#ece5e6"</span><span style="font-weight: bold">, </span><span style="color: red">"#f3edf0"</span><span style="font-weight: bold">, </span><span style="color: red">"#ffffff"</span><span style="font-weight: bold">),
+        )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_available_box<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            looks for an empty box location;
+        """
+
+        </span><span style="color: green; font-style: italic"># no more room in grid?
+
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>is_full<span style="font-weight: bold">():
+
+            </span><span style="color: blue; font-weight: bold">raise </span>GG<span style="font-weight: bold">.</span>GridError<span style="font-weight: bold">(</span><span style="color: red">"no more room in grid"</span><span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+
+            </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+            <span style="color: blue; font-weight: bold">while True</span><span style="font-weight: bold">:
+
+                </span>_row <span style="font-weight: bold">= </span>random<span style="font-weight: bold">.</span>randrange<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">)
+
+                </span>_column <span style="font-weight: bold">= </span>random<span style="font-weight: bold">.</span>randrange<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">)
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">):
+                    </span><span style="color: blue; font-weight: bold">break
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end while
+
+            </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if - no more room
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>init_widget<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            widget's main inits;
+        """
+
+        </span><span style="color: green; font-style: italic"># member inits
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_cvar <span style="font-weight: bold">= </span>TK<span style="font-weight: bold">.</span>IntVar<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback <span style="font-weight: bold">= </span><span style="color: blue">None
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tile<span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves tile to new (row, column) position;
+        """
+
+        </span><span style="color: green; font-style: italic"># param controls
+
+        </span><span style="color: blue; font-weight: bold">if </span>tile<span style="font-weight: bold">:
+            </span><span style="color: green; font-style: italic"># move into matrix
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>move_object<span style="font-weight: bold">(</span>tile<span style="font-weight: bold">.</span>row_column<span style="font-weight: bold">, (</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_down<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles downward;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on columns
+
+        </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_row2 <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_row <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row2<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_empty<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">] - </span><span style="color: red">1</span><span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>next_tile<span style="font-weight: bold">(</span>acted<span style="font-weight: bold">=</span>_acted<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_left<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles to the left;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on rows
+
+        </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_column <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_col<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is just near last one
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_empty<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">] + </span><span style="color: red">1</span><span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>next_tile<span style="font-weight: bold">(</span>acted<span style="font-weight: bold">=</span>_acted<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_right<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles to the right;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on rows
+
+        </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_column <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_col<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">, -</span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_empty<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">] - </span><span style="color: red">1</span><span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>next_tile<span style="font-weight: bold">(</span>acted<span style="font-weight: bold">=</span>_acted<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>move_tiles_up<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            moves all movable tiles upward;
+        """
+
+        </span><span style="color: green; font-style: italic"># inits
+
+        </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+        _acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        </span><span style="color: green; font-style: italic"># loop on columns
+
+        </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+            </span><span style="color: green; font-style: italic"># pass 1: fusions
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got a tile?
+
+                </span><span style="color: blue; font-weight: bold">if </span>_tile1<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># get next tile
+
+                    </span><span style="color: blue; font-weight: bold">for </span>_row2 <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>_row <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+                        </span><span style="color: green; font-style: italic"># get tile
+
+                        </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row2<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                        </span><span style="color: green; font-style: italic"># matching values?
+
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>fuse_tiles<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, </span>_tile2<span style="font-weight: bold">):
+                            </span><span style="color: green; font-style: italic"># we did something
+
+                            </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                        </span><span style="color: green; font-style: italic"># end if
+
+                        </span><span style="color: blue; font-weight: bold">if </span>_tile2<span style="font-weight: bold">: </span><span style="color: blue; font-weight: bold">break
+
+                    </span><span style="color: green; font-style: italic"># end for - next tile
+
+                # end if - tile
+
+            # end for - fusions
+
+            # empty location inits
+
+            </span>_empty <span style="font-weight: bold">= </span><span style="color: blue">None
+
+            </span><span style="color: green; font-style: italic"># pass 2: scrollings
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># get tile
+
+                </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># new empty location?
+
+                </span><span style="color: blue; font-weight: bold">if not </span>_tile1 <span style="color: blue; font-weight: bold">and not </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                </span><span style="color: green; font-style: italic"># got to move?
+
+                </span><span style="color: blue; font-weight: bold">elif </span>_tile1 <span style="color: blue; font-weight: bold">and </span>_empty<span style="font-weight: bold">:
+
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>move_tile<span style="font-weight: bold">(</span>_tile1<span style="font-weight: bold">, *</span>_empty<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># empty location is at least here now
+
+                    </span>_empty <span style="font-weight: bold">= (</span>_empty<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">] + </span><span style="color: red">1</span><span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># we did something
+
+                    </span>_acted <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+                </span><span style="color: green; font-style: italic"># end if
+
+            # end for - scrollings
+
+        # end for - row
+
+        # pop-up next tile or game over
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>next_tile<span style="font-weight: bold">(</span>acted<span style="font-weight: bold">=</span>_acted<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>next_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            verifies if game is over and pops a new tile otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># need another new tile?
+
+        </span><span style="color: blue; font-weight: bold">if </span>kw<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: red">"acted"</span><span style="font-weight: bold">):
+            </span><span style="color: green; font-style: italic"># pop up a new tile
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pop_tile<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># end if
+
+        # nothing to play any more?
+
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>no_more_hints<span style="font-weight: bold">():
+            </span><span style="color: green; font-style: italic"># game over!
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>game_over<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>no_more_hints<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            determines if game is no more playable;
+
+            returns True if game over, False otherwise;
+        """
+
+        </span><span style="color: green; font-style: italic"># verify only at the end
+
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>is_full<span style="font-weight: bold">():
+
+            </span><span style="color: green; font-style: italic"># enter the Matrix!
+
+            </span>_at <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>get_object_at
+
+            <span style="color: green; font-style: italic"># loop on rows
+
+            </span><span style="color: blue; font-weight: bold">for </span>_row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>rows<span style="font-weight: bold">):
+
+                </span><span style="color: green; font-style: italic"># loop on columns
+
+                </span><span style="color: blue; font-weight: bold">for </span>_column <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>columns<span style="font-weight: bold">):
+
+                    </span><span style="color: green; font-style: italic"># try to find at least *one* fusion to make
+
+                    </span>_tile1 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span>_tile2 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row<span style="font-weight: bold">, </span>_column <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">)
+
+                    </span>_tile3 <span style="font-weight: bold">= </span>_at<span style="font-weight: bold">(</span>_row <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+                    </span><span style="color: green; font-style: italic"># compare horizontally
+
+                    </span><span style="color: blue; font-weight: bold">if </span>_tile1 <span style="color: blue; font-weight: bold">and </span><span style="font-weight: bold">(
+                            (</span>_tile2 <span style="color: blue; font-weight: bold">and </span>_tile1<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>_tile2<span style="font-weight: bold">.</span>value<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">or
+                            </span><span style="font-weight: bold">(</span>_tile3 <span style="color: blue; font-weight: bold">and </span>_tile1<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>_tile3<span style="font-weight: bold">.</span>value<span style="font-weight: bold">)):
+                        </span><span style="color: green; font-style: italic"># the show must go on!
+
+                        </span><span style="color: blue; font-weight: bold">return False
+
+                    </span><span style="color: green; font-style: italic"># end if
+
+                # end for - columns
+
+            # end for - rows
+
+            # game is over!
+
+            </span><span style="color: blue; font-weight: bold">return True
+
+        </span><span style="color: green; font-style: italic"># end if - no more room
+
+        # the show must go on!
+
+        </span><span style="color: blue; font-weight: bold">return False
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>pop_tile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            pops up a random tile at a given place;
+        """
+
+        </span><span style="color: green; font-style: italic"># ensure we yet have room in grid
+
+        </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>is_full<span style="font-weight: bold">():
+            </span><span style="color: green; font-style: italic"># must have more "2" than "4" values
+
+            </span>_value <span style="font-weight: bold">= </span>random<span style="font-weight: bold">.</span>choice<span style="font-weight: bold">([</span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: red">4</span><span style="font-weight: bold">])
+
+            </span><span style="color: green; font-style: italic"># set grid tile
+
+            </span>_row<span style="font-weight: bold">, </span>_column <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_available_box<span style="font-weight: bold">()
+
+            </span>_tile <span style="font-weight: bold">= </span>Game2048GridTile<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>_value<span style="font-weight: bold">, </span>_row<span style="font-weight: bold">, </span>_column<span style="font-weight: bold">)
+
+            </span><span style="color: green; font-style: italic"># make some animations
+
+            </span>_tile<span style="font-weight: bold">.</span>animate_show<span style="font-weight: bold">()
+
+            </span><span style="color: green; font-style: italic"># store new tile for further use
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>register_tile<span style="font-weight: bold">(</span>_tile<span style="font-weight: bold">.</span>id<span style="font-weight: bold">, </span>_tile<span style="font-weight: bold">)
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>matrix<span style="font-weight: bold">.</span>add<span style="font-weight: bold">(</span>_tile<span style="font-weight: bold">, *</span>_tile<span style="font-weight: bold">.</span>row_column<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if - room in grid
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>set_score_callback<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>callback<span style="font-weight: bold">, </span>raise_error<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            sets up a callable function/method to use when updating
+            score values;
+        """
+
+        </span><span style="color: blue; font-weight: bold">if </span>callable<span style="font-weight: bold">(</span>callback<span style="font-weight: bold">):
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback <span style="font-weight: bold">= </span>callback
+
+        <span style="color: blue; font-weight: bold">elif </span>raise_error<span style="font-weight: bold">:
+
+            </span><span style="color: blue; font-weight: bold">raise </span>TypeError<span style="font-weight: bold">(
+
+                </span><span style="color: red">"callback parameter *MUST* be a callable object."
+            </span><span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>tiles_match<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tile1<span style="font-weight: bold">, </span>tile2<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            determines if tiles have the same value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span>tile1 <span style="color: blue; font-weight: bold">and </span>tile2 <span style="color: blue; font-weight: bold">and </span>tile1<span style="font-weight: bold">.</span>value <span style="font-weight: bold">== </span>tile2<span style="font-weight: bold">.</span>value
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>update_score<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">, </span>mode<span style="font-weight: bold">=</span><span style="color: red">"add"</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            updates score along @value and @mode;
+        """
+
+        </span><span style="color: green; font-style: italic"># object is callable?
+
+        </span><span style="color: blue; font-weight: bold">if </span>callable<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback<span style="font-weight: bold">):
+            </span><span style="color: green; font-style: italic"># update score through callback
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__score_callback<span style="font-weight: bold">(</span>value<span style="font-weight: bold">, </span>mode<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># end if
+
+    # end def
+
+
+# end class Game2048Grid
+
+
+# subcomponent class def
+
+</span><span style="color: blue; font-weight: bold">class </span>Game2048GridTile<span style="font-weight: bold">(</span>GG<span style="font-weight: bold">.</span>GridTile<span style="font-weight: bold">):
+    </span><span style="color: darkred">r"""
+        GridTile - GameGrid subcomponent;
+    """
+
+    </span><span style="color: green; font-style: italic"># GridTile colors along internal value
+
+    # color pairs are (background_color, foreground_color)
+
+    </span>COLORS <span style="font-weight: bold">= {
+
+        </span><span style="color: red">2</span><span style="font-weight: bold">: (</span><span style="color: red">"#eee4da"</span><span style="font-weight: bold">, </span><span style="color: red">"#776e65"</span><span style="font-weight: bold">),
+        </span><span style="color: red">4</span><span style="font-weight: bold">: (</span><span style="color: red">"#ede0c8"</span><span style="font-weight: bold">, </span><span style="color: red">"#776e65"</span><span style="font-weight: bold">),
+        </span><span style="color: red">8</span><span style="font-weight: bold">: (</span><span style="color: red">"#f2b179"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">16</span><span style="font-weight: bold">: (</span><span style="color: red">"#f59563"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">32</span><span style="font-weight: bold">: (</span><span style="color: red">"#f67c5f"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">64</span><span style="font-weight: bold">: (</span><span style="color: red">"#f65e3b"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">128</span><span style="font-weight: bold">: (</span><span style="color: red">"#edcf72"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">256</span><span style="font-weight: bold">: (</span><span style="color: red">"#edcc61"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">512</span><span style="font-weight: bold">: (</span><span style="color: red">"#edc850"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">1024</span><span style="font-weight: bold">: (</span><span style="color: red">"#edc53f"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">2048</span><span style="font-weight: bold">: (</span><span style="color: red">"#edc22e"</span><span style="font-weight: bold">, </span><span style="color: red">"#f9f6f2"</span><span style="font-weight: bold">),
+        </span><span style="color: red">4096</span><span style="font-weight: bold">: (</span><span style="color: red">"#ed952e"</span><span style="font-weight: bold">, </span><span style="color: red">"#ffe0b7"</span><span style="font-weight: bold">),
+        </span><span style="color: red">8192</span><span style="font-weight: bold">: (</span><span style="color: red">"#d2ff50"</span><span style="font-weight: bold">, </span><span style="color: red">"#bb6790"</span><span style="font-weight: bold">),
+        </span><span style="color: red">16384</span><span style="font-weight: bold">: (</span><span style="color: red">"yellow"</span><span style="font-weight: bold">, </span><span style="color: red">"chocolate"</span><span style="font-weight: bold">),
+        </span><span style="color: red">32768</span><span style="font-weight: bold">: (</span><span style="color: red">"orange"</span><span style="font-weight: bold">, </span><span style="color: red">"yellow"</span><span style="font-weight: bold">),
+        </span><span style="color: red">65536</span><span style="font-weight: bold">: (</span><span style="color: red">"red"</span><span style="font-weight: bold">, </span><span style="color: red">"white"</span><span style="font-weight: bold">),
+
+    }  </span><span style="color: green; font-style: italic"># end of COLORS
+
+    # GridTile fonts along internal value
+
+    </span>FONTS <span style="font-weight: bold">= {
+
+        </span><span style="color: red">2</span><span style="font-weight: bold">: </span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">4</span><span style="font-weight: bold">: </span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">8</span><span style="font-weight: bold">: </span><span style="color: red">"sans 32 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">16</span><span style="font-weight: bold">: </span><span style="color: red">"sans 28 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">32</span><span style="font-weight: bold">: </span><span style="color: red">"sans 28 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">64</span><span style="font-weight: bold">: </span><span style="color: red">"sans 28 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">128</span><span style="font-weight: bold">: </span><span style="color: red">"sans 24 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">256</span><span style="font-weight: bold">: </span><span style="color: red">"sans 24 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">512</span><span style="font-weight: bold">: </span><span style="color: red">"sans 24 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">1024</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">2048</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">4096</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">8192</span><span style="font-weight: bold">: </span><span style="color: red">"sans 20 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">16384</span><span style="font-weight: bold">: </span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">32768</span><span style="font-weight: bold">: </span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">,
+        </span><span style="color: red">65536</span><span style="font-weight: bold">: </span><span style="color: red">"sans 16 bold"</span><span style="font-weight: bold">,
+
+    }  </span><span style="color: green; font-style: italic"># end of FONTS
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_move_to<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            animates tile movement to (row, column) destination;
+
+            updates tile's internal data;
+        """
+
+        </span><span style="color: green; font-style: italic"># FIXME: implement true animation by here?
+
+        </span>_x0<span style="font-weight: bold">, </span>_y0 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_origin
+
+        _x1<span style="font-weight: bold">, </span>_y1 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>cell_size<span style="font-weight: bold">.</span>xy_left_top<span style="font-weight: bold">(</span>row<span style="font-weight: bold">, </span>column<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># move tile on canvas
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>move<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">, (</span>_x1 <span style="font-weight: bold">- </span>_x0<span style="font-weight: bold">), (</span>_y1 <span style="font-weight: bold">- </span>_y0<span style="font-weight: bold">))
+
+        </span><span style="color: green; font-style: italic"># update data
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>row<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>column <span style="font-weight: bold">= </span>row<span style="font-weight: bold">, </span>column
+
+    <span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_tile_popup<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>value<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            tile popup animation;
+        """
+
+        </span><span style="color: green; font-style: italic"># init center point
+
+        </span>_x0<span style="font-weight: bold">, </span>_y0 <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_center
+
+        <span style="color: green; font-style: italic"># make animation
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>scale<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>id<span style="font-weight: bold">, </span>_x0<span style="font-weight: bold">, </span>_y0<span style="font-weight: bold">, </span>value<span style="font-weight: bold">, </span>value<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_remove<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            animates a grid removal;
+        """
+
+        </span><span style="color: green; font-style: italic"># FIXME: implement true animation by here?
+
+        # remove graphics from canvas
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>delete<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>animate_show<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            animates tile showing up;
+        """
+
+        </span><span style="color: green; font-style: italic"># create tile
+
+        </span>_x<span style="font-weight: bold">, </span>_y <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_origin
+
+        _width<span style="font-weight: bold">, </span>_height <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>size
+
+        _bg<span style="font-weight: bold">, </span>_fg <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_colors<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>create_rectangle<span style="font-weight: bold">(
+
+            </span>_x<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">, (</span>_x <span style="font-weight: bold">+ </span>_width<span style="font-weight: bold">), (</span>_y <span style="font-weight: bold">+ </span>_height<span style="font-weight: bold">),
+
+            </span>fill<span style="font-weight: bold">=</span>_bg<span style="font-weight: bold">, </span>width<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">, </span>tags<span style="font-weight: bold">=(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">, </span><span style="color: red">"tiles"</span><span style="font-weight: bold">),
+        )
+
+        </span><span style="color: green; font-style: italic"># set value text
+
+        </span>_font <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_font<span style="font-weight: bold">()
+
+        </span>_x<span style="font-weight: bold">, </span>_y <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>xy_center
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>value_id <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>create_text<span style="font-weight: bold">(
+
+            </span>_x<span style="font-weight: bold">, </span>_y<span style="font-weight: bold">, </span>text<span style="font-weight: bold">=</span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">),
+
+            </span>fill<span style="font-weight: bold">=</span>_fg<span style="font-weight: bold">, </span>font<span style="font-weight: bold">=</span>_font<span style="font-weight: bold">, </span>tags<span style="font-weight: bold">=(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tag<span style="font-weight: bold">, </span><span style="color: red">"values"</span><span style="font-weight: bold">),
+        )
+
+        </span><span style="color: green; font-style: italic"># init animation
+
+        </span>_anim_tile <span style="font-weight: bold">= </span>GG<span style="font-weight: bold">.</span>GridAnimation<span style="font-weight: bold">()
+
+        </span>_anim_tile<span style="font-weight: bold">.</span>register<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>animate_tile_popup<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># do animation
+
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>tile_animation<span style="font-weight: bold">:
+            </span>_anim_tile<span style="font-weight: bold">.</span>start<span style="font-weight: bold">(</span>interval<span style="font-weight: bold">=</span><span style="color: red">50</span><span style="font-weight: bold">, </span>sequence<span style="font-weight: bold">=(</span><span style="color: red">6 </span><span style="font-weight: bold">/ </span><span style="color: red">5</span><span style="font-weight: bold">, </span><span style="color: red">6 </span><span style="font-weight: bold">/ </span><span style="color: red">5</span><span style="font-weight: bold">, </span><span style="color: red">5 </span><span style="font-weight: bold">/ </span><span style="color: red">6</span><span style="font-weight: bold">, </span><span style="color: red">5 </span><span style="font-weight: bold">/ </span><span style="color: red">6</span><span style="font-weight: bold">), )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_value_colors<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns (background, foreground) color pair along
+            internal tile value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>COLORS<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">, (</span><span style="color: red">"red"</span><span style="font-weight: bold">, </span><span style="color: red">"yellow"</span><span style="font-weight: bold">))
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_value_font<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            returns font string along internal tile value;
+        """
+
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>FONTS<span style="font-weight: bold">.</span>get<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">, </span><span style="color: red">"sans 10 bold"</span><span style="font-weight: bold">)
+
+    </span><span style="color: green; font-style: italic"># end def
+
+    </span><span style="color: blue; font-weight: bold">def </span>update_display<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>tk_event<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: darkred">r"""
+            updates value display;
+        """
+
+        </span><span style="color: green; font-style: italic"># new colors
+
+        </span>_bg<span style="font-weight: bold">, </span>_fg <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_colors<span style="font-weight: bold">()
+
+        </span><span style="color: green; font-style: italic"># update tile colors
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>id<span style="font-weight: bold">, </span>fill<span style="font-weight: bold">=</span>_bg<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># update tile text and colors
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>owner<span style="font-weight: bold">.</span>itemconfigure<span style="font-weight: bold">(
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value_id<span style="font-weight: bold">,
+
+            </span>text<span style="font-weight: bold">=</span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>value<span style="font-weight: bold">),
+
+            </span>font<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>get_value_font<span style="font-weight: bold">(),
+
+            </span>fill<span style="font-weight: bold">=</span>_fg<span style="font-weight: bold">,
+        )
+
+    </span><span style="color: green; font-style: italic"># end def
+
+# end class Game2048GridTile
+</span>
+  </pre>
+  </body>
+  </html>
+  

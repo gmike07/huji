@@ -1,0 +1,19 @@
+<html>
+  <head>
+  <title>pacman.py</title>
+  </head>
+  <body>
+  <h3>pacman.py (<a href="../pacman.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>sys
+<span style="color: blue; font-weight: bold">from </span>PCF<span style="font-weight: bold">.</span>pacman <span style="color: blue; font-weight: bold">import </span>runGames<span style="font-weight: bold">, </span>readCommand
+
+<span style="color: blue; font-weight: bold">if </span>__name__ <span style="font-weight: bold">== </span><span style="color: red">'__main__'</span><span style="font-weight: bold">:
+    </span>args <span style="font-weight: bold">= </span>readCommand<span style="font-weight: bold">(</span>sys<span style="font-weight: bold">.</span>argv<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">:])  </span><span style="color: green; font-style: italic"># Get game components based on input
+    </span>runGames<span style="font-weight: bold">(**</span>args<span style="font-weight: bold">)
+</span>
+  </pre>
+  </body>
+  </html>
+  

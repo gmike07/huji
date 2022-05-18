@@ -1,0 +1,47 @@
+<html>
+  <head>
+  <title>hanoi.py</title>
+  </head>
+  <body>
+  <h3>hanoi.py (<a href="../hanoi.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>sys
+
+
+<span style="color: blue; font-weight: bold">def </span>create_domain_file<span style="font-weight: bold">(</span>domain_file_name<span style="font-weight: bold">, </span>n_<span style="font-weight: bold">, </span>m_<span style="font-weight: bold">):
+    </span>disks <span style="font-weight: bold">= [</span><span style="color: red">'d_%s' </span><span style="font-weight: bold">% </span>i <span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>list<span style="font-weight: bold">(</span>range<span style="font-weight: bold">(</span>n_<span style="font-weight: bold">))]  </span><span style="color: green; font-style: italic"># [d_0,..., d_(n_ - 1)]
+    </span>pegs <span style="font-weight: bold">= [</span><span style="color: red">'p_%s' </span><span style="font-weight: bold">% </span>i <span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>list<span style="font-weight: bold">(</span>range<span style="font-weight: bold">(</span>m_<span style="font-weight: bold">))]  </span><span style="color: green; font-style: italic"># [p_0,..., p_(m_ - 1)]
+    </span>domain_file <span style="font-weight: bold">= </span>open<span style="font-weight: bold">(</span>domain_file_name<span style="font-weight: bold">, </span><span style="color: red">'w'</span><span style="font-weight: bold">)  </span><span style="color: green; font-style: italic"># use domain_file.write(str) to write to domain_file
+    </span><span style="color: red">"*** YOUR CODE HERE ***"
+
+    </span>domain_file<span style="font-weight: bold">.</span>close<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">def </span>create_problem_file<span style="font-weight: bold">(</span>problem_file_name_<span style="font-weight: bold">, </span>n_<span style="font-weight: bold">, </span>m_<span style="font-weight: bold">):
+    </span>disks <span style="font-weight: bold">= [</span><span style="color: red">'d_%s' </span><span style="font-weight: bold">% </span>i <span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>list<span style="font-weight: bold">(</span>range<span style="font-weight: bold">(</span>n_<span style="font-weight: bold">))]  </span><span style="color: green; font-style: italic"># [d_0,..., d_(n_ - 1)]
+    </span>pegs <span style="font-weight: bold">= [</span><span style="color: red">'p_%s' </span><span style="font-weight: bold">% </span>i <span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>list<span style="font-weight: bold">(</span>range<span style="font-weight: bold">(</span>m_<span style="font-weight: bold">))]  </span><span style="color: green; font-style: italic"># [p_0,..., p_(m_ - 1)]
+    </span>problem_file <span style="font-weight: bold">= </span>open<span style="font-weight: bold">(</span>problem_file_name_<span style="font-weight: bold">, </span><span style="color: red">'w'</span><span style="font-weight: bold">)  </span><span style="color: green; font-style: italic"># use problem_file.write(str) to write to problem_file
+    </span><span style="color: red">"*** YOUR CODE HERE ***"
+
+    </span>problem_file<span style="font-weight: bold">.</span>close<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">if </span>__name__ <span style="font-weight: bold">== </span><span style="color: red">'__main__'</span><span style="font-weight: bold">:
+    </span><span style="color: blue; font-weight: bold">if </span>len<span style="font-weight: bold">(</span>sys<span style="font-weight: bold">.</span>argv<span style="font-weight: bold">) != </span><span style="color: red">3</span><span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">'Usage: hanoi.py n m'</span><span style="font-weight: bold">)
+        </span>sys<span style="font-weight: bold">.</span>exit<span style="font-weight: bold">(</span><span style="color: red">2</span><span style="font-weight: bold">)
+
+    </span>n <span style="font-weight: bold">= </span>int<span style="font-weight: bold">(</span>float<span style="font-weight: bold">(</span>sys<span style="font-weight: bold">.</span>argv<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">]))  </span><span style="color: green; font-style: italic"># number of disks
+    </span>m <span style="font-weight: bold">= </span>int<span style="font-weight: bold">(</span>float<span style="font-weight: bold">(</span>sys<span style="font-weight: bold">.</span>argv<span style="font-weight: bold">[</span><span style="color: red">2</span><span style="font-weight: bold">]))  </span><span style="color: green; font-style: italic"># number of pegs
+
+    </span>domain_file_name <span style="font-weight: bold">= </span><span style="color: red">'hanoi_%s_%s_domain.txt' </span><span style="font-weight: bold">% (</span>n<span style="font-weight: bold">, </span>m<span style="font-weight: bold">)
+    </span>problem_file_name <span style="font-weight: bold">= </span><span style="color: red">'hanoi_%s_%s_problem.txt' </span><span style="font-weight: bold">% (</span>n<span style="font-weight: bold">, </span>m<span style="font-weight: bold">)
+
+    </span>create_domain_file<span style="font-weight: bold">(</span>domain_file_name<span style="font-weight: bold">, </span>n<span style="font-weight: bold">, </span>m<span style="font-weight: bold">)
+    </span>create_problem_file<span style="font-weight: bold">(</span>problem_file_name<span style="font-weight: bold">, </span>n<span style="font-weight: bold">, </span>m<span style="font-weight: bold">)
+</span>
+  </pre>
+  </body>
+  </html>
+  

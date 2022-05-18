@@ -1,0 +1,246 @@
+<html>
+  <head>
+  <title>board.py</title>
+  </head>
+  <body>
+  <h3>board.py (<a href="../board.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>numpy as np
+
+
+<span style="color: blue; font-weight: bold">class </span>Board<span style="font-weight: bold">:
+
+    </span><span style="color: darkred">"""
+    A Board describes the current state of the game board. It's separate from
+    the game engine to allow the Input objects to check if their moves are valid,
+    etc... without the help of the game engine.
+
+    The Board stores:
+    - board_w/board_h: the width and height of the playing area
+    - state: a 2D array of the board state. -1 = free; 0-3 = player x's tile
+    - _legal: a 4 x 2D array. _legal[player][y][x] is True iff (x,y) is not
+      on another player's piece or adjacent to a player's own piece
+    - connected: a 4 x 2D array. _connected[player][y][x] is True iff (x,y) is
+      diagonally connected to another one of the player's tiles
+    - piece_list: A PieceList object (probably shared with the game engine) to
+      help understand the moves
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>num_players<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">= </span>board_w
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">= </span>board_h
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players <span style="font-weight: bold">= </span>num_players
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>scores <span style="font-weight: bold">= [</span><span style="color: red">0</span><span style="font-weight: bold">] * </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>state <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>full<span style="font-weight: bold">((</span>board_h<span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">), -</span><span style="color: red">1</span><span style="font-weight: bold">, </span>np<span style="font-weight: bold">.</span>int8<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>full<span style="font-weight: bold">((</span>num_players<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">), </span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">, </span>np<span style="font-weight: bold">.</span>bool_<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>full<span style="font-weight: bold">((</span>num_players<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">), </span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">, </span>np<span style="font-weight: bold">.</span>bool_<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>starting_point<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">]] = </span><span style="color: blue; font-weight: bold">True
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>piece_list <span style="font-weight: bold">= </span>piece_list
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>full<span style="font-weight: bold">((</span>num_players<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">.</span>get_num_pieces<span style="font-weight: bold">()), </span><span style="color: blue; font-weight: bold">True</span><span style="font-weight: bold">, </span>np<span style="font-weight: bold">.</span>bool_<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>add_move<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">, </span>move<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Try to add &lt;player&gt;'s &lt;move&gt;.
+
+        If the move is legal, the board state is updated; if it's not legal, a
+        ValueError is raised.
+
+        Returns the number of tiles placed on the board.
+        """
+        </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>check_move_valid<span style="font-weight: bold">(</span>player<span style="font-weight: bold">, </span>move<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">raise </span>ValueError<span style="font-weight: bold">(</span><span style="color: red">"Move is not allowed"</span><span style="font-weight: bold">)
+
+        </span>piece <span style="font-weight: bold">= </span>move<span style="font-weight: bold">.</span>piece
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>move<span style="font-weight: bold">.</span>piece_index<span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">False  </span><span style="color: green; font-style: italic"># mark piece as used
+
+        # Update internal state for each tile
+        </span><span style="color: blue; font-weight: bold">for </span><span style="font-weight: bold">(</span>xi<span style="font-weight: bold">, </span>yi<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">in </span>move<span style="font-weight: bold">.</span>orientation<span style="font-weight: bold">:
+            (</span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">) = (</span>xi <span style="font-weight: bold">+ </span>move<span style="font-weight: bold">.</span>x<span style="font-weight: bold">, </span>yi <span style="font-weight: bold">+ </span>move<span style="font-weight: bold">.</span>y<span style="font-weight: bold">)
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>state<span style="font-weight: bold">[</span>y<span style="font-weight: bold">, </span>x<span style="font-weight: bold">] = </span>player
+
+            <span style="color: green; font-style: italic"># Nobody can play on this square
+            </span><span style="color: blue; font-weight: bold">for </span>p <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players<span style="font-weight: bold">):
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal<span style="font-weight: bold">[</span>p<span style="font-weight: bold">][</span>y<span style="font-weight: bold">][</span>x<span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">False
+
+            </span><span style="color: green; font-style: italic"># This player can't play next to this square
+            </span><span style="color: blue; font-weight: bold">if </span>x <span style="font-weight: bold">&gt; </span><span style="color: red">0</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y<span style="font-weight: bold">, </span>x <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">False
+            if </span>x <span style="font-weight: bold">&lt; </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y<span style="font-weight: bold">, </span>x <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">False
+            if </span>y <span style="font-weight: bold">&gt; </span><span style="color: red">0</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span>x<span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">False
+            if </span>y <span style="font-weight: bold">&lt; </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span>x<span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">False
+
+            </span><span style="color: green; font-style: italic"># The diagonals are now attached
+            </span><span style="color: blue; font-weight: bold">if </span>x <span style="font-weight: bold">&gt; </span><span style="color: red">0 </span><span style="color: blue; font-weight: bold">and </span>y <span style="font-weight: bold">&gt; </span><span style="color: red">0</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span>x <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+            if </span>x <span style="font-weight: bold">&gt; </span><span style="color: red">0 </span><span style="color: blue; font-weight: bold">and </span>y <span style="font-weight: bold">&lt; </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span>x <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+            if </span>x <span style="font-weight: bold">&lt; </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1 </span><span style="color: blue; font-weight: bold">and </span>y <span style="font-weight: bold">&lt; </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span>x <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+            if </span>x <span style="font-weight: bold">&lt; </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1 </span><span style="color: blue; font-weight: bold">and </span>y <span style="font-weight: bold">&gt; </span><span style="color: red">0</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span>x <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>scores<span style="font-weight: bold">[</span>player<span style="font-weight: bold">] += </span>piece<span style="font-weight: bold">.</span>get_num_tiles<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">return </span>piece<span style="font-weight: bold">.</span>get_num_tiles<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>do_move<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">, </span>move<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Performs a move, returning a new board
+        """
+        </span>new_board <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>__copy__<span style="font-weight: bold">()
+        </span>new_board<span style="font-weight: bold">.</span>add_move<span style="font-weight: bold">(</span>player<span style="font-weight: bold">, </span>move<span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">return </span>new_board
+
+    <span style="color: blue; font-weight: bold">def </span>get_legal_moves<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Returns a list of legal moves for given player for this board state 
+        """
+        </span><span style="color: green; font-style: italic"># Generate all legal moves
+        </span>move_list <span style="font-weight: bold">= []
+        </span><span style="color: blue; font-weight: bold">for </span>piece <span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>piece_list<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">for </span>x <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">):
+                </span><span style="color: blue; font-weight: bold">for </span>y <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">):
+                    </span><span style="color: blue; font-weight: bold">for </span>ori <span style="color: blue; font-weight: bold">in </span>piece<span style="font-weight: bold">:
+                        </span>new_move <span style="font-weight: bold">= </span>Move<span style="font-weight: bold">(</span>piece<span style="font-weight: bold">,
+                                        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>piece_list<span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">.</span>index<span style="font-weight: bold">(</span>piece<span style="font-weight: bold">),
+                                        </span>ori<span style="font-weight: bold">, </span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">)
+                        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>check_move_valid<span style="font-weight: bold">(</span>player<span style="font-weight: bold">, </span>new_move<span style="font-weight: bold">):
+                            </span>move_list<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>new_move<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">return </span>move_list
+
+    <span style="color: blue; font-weight: bold">def </span>check_move_valid<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">, </span>move<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Check if &lt;player&gt; can legally perform &lt;move&gt;.
+
+        For a move to be valid, it must:
+        - Use a piece that is available
+        - Be completely in bounds
+        - Not be intersecting any other tiles
+        - Not be adjacent to any of the player's other pieces
+        - Be diagonally attached to one of the player's pieces or their corner
+
+        Return True if the move is legal or False otherwise.
+        """
+        </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>move<span style="font-weight: bold">.</span>piece_index<span style="font-weight: bold">]:
+            </span><span style="color: green; font-style: italic"># piece has already been used
+            </span><span style="color: blue; font-weight: bold">return False
+
+        </span>attached_corner <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">False
+
+        for </span><span style="font-weight: bold">(</span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">in </span>move<span style="font-weight: bold">.</span>orientation<span style="font-weight: bold">:
+            </span><span style="color: green; font-style: italic"># If any tile is illegal, this move isn't valid
+            </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>check_tile_legal<span style="font-weight: bold">(</span>player<span style="font-weight: bold">, </span>x <span style="font-weight: bold">+ </span>move<span style="font-weight: bold">.</span>x<span style="font-weight: bold">, </span>y <span style="font-weight: bold">+ </span>move<span style="font-weight: bold">.</span>y<span style="font-weight: bold">):
+                </span><span style="color: blue; font-weight: bold">return False
+
+            if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>check_tile_attached<span style="font-weight: bold">(</span>player<span style="font-weight: bold">, </span>x <span style="font-weight: bold">+ </span>move<span style="font-weight: bold">.</span>x<span style="font-weight: bold">, </span>y <span style="font-weight: bold">+ </span>move<span style="font-weight: bold">.</span>y<span style="font-weight: bold">):
+                </span>attached_corner <span style="font-weight: bold">= </span><span style="color: blue; font-weight: bold">True
+
+            </span><span style="color: green; font-style: italic"># If at least one tile is attached, this move is valid
+        </span><span style="color: blue; font-weight: bold">return </span>attached_corner
+
+    <span style="color: blue; font-weight: bold">def </span>check_tile_legal<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">, </span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Check if it's legal for &lt;player&gt; to place one tile at (&lt;x&gt;, &lt;y&gt;).
+
+        Legal tiles:
+        - Are in bounds
+        - Don't intersect with existing tiles
+        - Aren't adjacent to the player's existing tiles
+
+        Returns True if legal or False if not.
+        """
+
+        </span><span style="color: green; font-style: italic"># Make sure tile in bounds
+        </span><span style="color: blue; font-weight: bold">if </span>x <span style="font-weight: bold">&lt; </span><span style="color: red">0 </span><span style="color: blue; font-weight: bold">or </span>x <span style="font-weight: bold">&gt;= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="color: blue; font-weight: bold">or </span>y <span style="font-weight: bold">&lt; </span><span style="color: red">0 </span><span style="color: blue; font-weight: bold">or </span>y <span style="font-weight: bold">&gt;= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return False
+
+        </span><span style="color: green; font-style: italic"># Otherwise, it's in the lookup table
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y<span style="font-weight: bold">, </span>x<span style="font-weight: bold">]
+
+    </span><span style="color: blue; font-weight: bold">def </span>check_tile_attached<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">, </span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""Check if (&lt;x&gt;, &lt;y&gt;) is diagonally attached to &lt;player&gt;'s moves.
+
+        Note that this does not check if this move is legal.
+
+        Returns True if attached or False if not.
+        """
+
+        </span><span style="color: green; font-style: italic"># Make sure tile in bounds
+        </span><span style="color: blue; font-weight: bold">if </span>x <span style="font-weight: bold">&lt; </span><span style="color: red">0 </span><span style="color: blue; font-weight: bold">or </span>x <span style="font-weight: bold">&gt;= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="color: blue; font-weight: bold">or </span>y <span style="font-weight: bold">&lt; </span><span style="color: red">0 </span><span style="color: blue; font-weight: bold">or </span>y <span style="font-weight: bold">&gt;= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">return False
+
+        </span><span style="color: green; font-style: italic"># Otherwise, it's in the lookup table
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span>player<span style="font-weight: bold">, </span>y<span style="font-weight: bold">, </span>x<span style="font-weight: bold">]
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_position<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>state<span style="font-weight: bold">[</span>y<span style="font-weight: bold">, </span>x<span style="font-weight: bold">]
+
+    </span><span style="color: blue; font-weight: bold">def </span>score<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>player<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>scores<span style="font-weight: bold">[</span>player<span style="font-weight: bold">]
+
+    </span><span style="color: blue; font-weight: bold">def </span>__eq__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>other<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span>np<span style="font-weight: bold">.</span>array_equal<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>state<span style="font-weight: bold">, </span>other<span style="font-weight: bold">.</span>state<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">and </span>np<span style="font-weight: bold">.</span>array_equal<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">, </span>other<span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>__hash__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">return </span>hash<span style="font-weight: bold">(</span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>state<span style="font-weight: bold">))
+
+    </span><span style="color: blue; font-weight: bold">def </span>__str__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>out_str <span style="font-weight: bold">= []
+        </span><span style="color: blue; font-weight: bold">for </span>row <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">for </span>col <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w<span style="font-weight: bold">):
+                </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>state<span style="font-weight: bold">[</span>col<span style="font-weight: bold">, </span>row<span style="font-weight: bold">] == -</span><span style="color: red">1</span><span style="font-weight: bold">:
+                    </span>out_str<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span><span style="color: red">'_'</span><span style="font-weight: bold">)
+                </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+                    </span>out_str<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>state<span style="font-weight: bold">[</span>col<span style="font-weight: bold">, </span>row<span style="font-weight: bold">]))
+            </span>out_str<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span><span style="color: red">'\n'</span><span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: red">''</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">(</span>out_str<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>__copy__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>cpy_board <span style="font-weight: bold">= </span>Board<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>piece_list<span style="font-weight: bold">)
+        </span>cpy_board<span style="font-weight: bold">.</span>state <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>state<span style="font-weight: bold">)
+        </span>cpy_board<span style="font-weight: bold">.</span>_legal <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_legal<span style="font-weight: bold">)
+        </span>cpy_board<span style="font-weight: bold">.</span>connected <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>connected<span style="font-weight: bold">)
+        </span>cpy_board<span style="font-weight: bold">.</span>pieces <span style="font-weight: bold">= </span>np<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">)
+        </span>cpy_board<span style="font-weight: bold">.</span>scores <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>scores<span style="font-weight: bold">[:]
+        </span><span style="color: blue; font-weight: bold">return </span>cpy_board
+
+
+<span style="color: blue; font-weight: bold">class </span>Move<span style="font-weight: bold">:
+    </span><span style="color: darkred">"""
+    A Move describes how one of the players is going to spend their move.
+
+    It contains:
+    - Piece: the ID of the piece being used
+    - x/y: the center coordinates of the piece [0-19)
+    - Rotation: how many times the piece should be rotated CW [0-3]
+    - Flip: whether the piece should be flipped (True/False)
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>piece<span style="font-weight: bold">, </span>piece_index<span style="font-weight: bold">, </span>orientation<span style="font-weight: bold">, </span>x<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">, </span>y<span style="font-weight: bold">=</span><span style="color: red">0</span><span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>piece <span style="font-weight: bold">= </span>piece
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>piece_index <span style="font-weight: bold">= </span>piece_index
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>x <span style="font-weight: bold">= </span>x
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>y <span style="font-weight: bold">= </span>y
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>orientation <span style="font-weight: bold">= </span>orientation
+
+    <span style="color: blue; font-weight: bold">def </span>__str__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>out_str <span style="font-weight: bold">= [[</span><span style="color: red">' ' </span><span style="color: blue; font-weight: bold">for </span>_ <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">5</span><span style="font-weight: bold">)] </span><span style="color: blue; font-weight: bold">for </span>_ <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">5</span><span style="font-weight: bold">)]
+        </span><span style="color: blue; font-weight: bold">for </span><span style="font-weight: bold">(</span>x<span style="font-weight: bold">, </span>y<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">in </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>orientation<span style="font-weight: bold">:
+            </span>out_str<span style="font-weight: bold">[</span>x<span style="font-weight: bold">][</span>y<span style="font-weight: bold">] = </span><span style="color: red">'0'
+        </span>out_str <span style="font-weight: bold">= </span><span style="color: red">'\n'</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">(
+            [</span><span style="color: red">''</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">([</span>x_pos <span style="color: blue; font-weight: bold">for </span>x_pos <span style="color: blue; font-weight: bold">in </span>out_str<span style="font-weight: bold">[</span>y_val<span style="font-weight: bold">]])
+             </span><span style="color: blue; font-weight: bold">for </span>y_val <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">5</span><span style="font-weight: bold">)]
+        )
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: red">''</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">(</span>out_str<span style="font-weight: bold">) + </span><span style="color: red">"x: " </span><span style="font-weight: bold">+ </span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>x<span style="font-weight: bold">) + </span><span style="color: red">" y: " </span><span style="font-weight: bold">+ </span>str<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>y<span style="font-weight: bold">)
+</span>
+  </pre>
+  </body>
+  </html>
+  

@@ -1,0 +1,24 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex8:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 2 files:
+
+README - this file
+ex8.py - has 4 functions that were required and helper functions,
+    the program can solve sudoku, print k subset, fill k subset,
+    and return k subset
+
+
+======================
+=  Special Comments  =
+======================

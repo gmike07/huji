@@ -1,0 +1,4 @@
+the 2 audios sound a bit different. the vocoder one is more precise because it
+doesn't ignore the shifting while the spectrogram sounds messy because
+everything plays at once (due to the sins and cons not having their correct
+phases).

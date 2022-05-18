@@ -1,0 +1,47 @@
+<html>
+  <head>
+  <title>displays.py</title>
+  </head>
+  <body>
+  <h3>displays.py (<a href="../displays.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>time
+
+
+<span style="color: blue; font-weight: bold">class </span>SummaryDisplay<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>super<span style="font-weight: bold">(</span>SummaryDisplay<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">).</span>__init__<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>scores <span style="font-weight: bold">= []
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>highest_tile <span style="font-weight: bold">= []
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>game_durations <span style="font-weight: bold">= []
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>game_start_time <span style="font-weight: bold">= </span><span style="color: blue">None
+
+    </span><span style="color: blue; font-weight: bold">def </span>initialize<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>initial_state<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>game_start_time <span style="font-weight: bold">= </span>time<span style="font-weight: bold">.</span>time<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>update_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>new_state<span style="font-weight: bold">, </span>action<span style="font-weight: bold">, </span>opponent_action<span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">if </span>new_state<span style="font-weight: bold">.</span>done<span style="font-weight: bold">:
+            </span>game_end_time <span style="font-weight: bold">= </span>time<span style="font-weight: bold">.</span>time<span style="font-weight: bold">()
+            </span>game_duration <span style="font-weight: bold">= </span>game_end_time <span style="font-weight: bold">- </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>game_start_time
+            <span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"score: %s\nhighest tile: %s\ngame_duration: %s" </span><span style="font-weight: bold">% (</span>new_state<span style="font-weight: bold">.</span>score<span style="font-weight: bold">, </span>new_state<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>max<span style="font-weight: bold">(),
+                                                                      </span>game_duration<span style="font-weight: bold">))
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>scores<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>new_state<span style="font-weight: bold">.</span>score<span style="font-weight: bold">)
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>highest_tile<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>new_state<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>max<span style="font-weight: bold">())
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>game_durations<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span>game_duration<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>mainloop_iteration<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">pass
+
+    def </span>print_stats<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span>win_rate <span style="font-weight: bold">= </span>len<span style="font-weight: bold">(</span>list<span style="font-weight: bold">(</span>filter<span style="font-weight: bold">(</span><span style="color: blue; font-weight: bold">lambda </span>x<span style="font-weight: bold">: </span>x <span style="font-weight: bold">&gt;= </span><span style="color: red">2048</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>highest_tile<span style="font-weight: bold">))) / </span>len<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>highest_tile<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"="</span><span style="font-weight: bold">*</span><span style="color: red">30</span><span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"scores: %s" </span><span style="font-weight: bold">% </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>scores<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"highest tile: %s" </span><span style="font-weight: bold">% </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>highest_tile<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"game_durations: %s" </span><span style="font-weight: bold">% </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>game_durations<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"win rate: %s" </span><span style="font-weight: bold">% </span>win_rate<span style="font-weight: bold">)
+</span>
+  </pre>
+  </body>
+  </html>
+  

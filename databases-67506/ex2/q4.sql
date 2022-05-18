@@ -1,0 +1,6 @@
+SELECT DISTINCT P.pid, D.did
+FROM Doctor D, Patient P
+EXCEPT
+SELECT DISTINCT V.pid, V.did
+FROM Visit V
+ORDER BY pid ASC;

@@ -1,0 +1,3 @@
+the max_levels of the pyramid lets us control how much layers we have to
+blend with (up to some maximum), the more layers we have, the more the blending
+will look natural.

@@ -1,0 +1,37 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex2:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 8 files:
+README - this file
+convert_spoon_to_cup.py - gets a number of spoons, and returns a float of how many cups are needed
+calculate_mathematical_expression.py - gets a string that contains a mathematical expression and returns the output of that calculation
+largest_and_smallest.py - a file that gets 3 numbers and returns the max and min of them
+quadratic_equation/py - a file that returns the roots of the given parabula, and works with user input
+shapes.py - a file that works with user input and calculates an area of the chosen shape
+temperature.py - a file that contains a function which tells the user if it is summer yet
+test_largest_and_smallest.py - a file that checks that largest_and_smallest.py is working correctly
+======================
+=  Special Comments  =
+======================
+in test_largest_and_smallest.py, the cases i chose were to check:
+the 1 one was to check what the function returns when the values are the same and are diffrent types (int, float)
+the 2 one was to check what the function returns when values are the same except the decimal value, i.e. check it handles decimal point correctly
+the 3 one was to check what the function returns when inputs are not in the correct order
+the 4 one was to check what the function returns when the values are not in the correct order and are from different types (part int, part float)
+the 5 one was to check what the function returns when the values are from different types and part of them are negative and not in the correct order
+
+in largest_and_smallest.py, i added two function:
+the first function is min2 that returns the min between 2 values
+the second function is max2 that returns the max between 2 values
+I added them because it made the largest_and_smallest much easier, it deleted the need to check each edge case
+and made it much more readable

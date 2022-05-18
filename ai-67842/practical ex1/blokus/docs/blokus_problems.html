@@ -1,0 +1,231 @@
+<html>
+  <head>
+  <title>blokus_problems.py</title>
+  </head>
+  <body>
+  <h3>blokus_problems.py (<a href="../blokus_problems.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">from </span>board <span style="color: blue; font-weight: bold">import </span>Board
+<span style="color: blue; font-weight: bold">from </span>search <span style="color: blue; font-weight: bold">import </span>SearchProblem<span style="font-weight: bold">, </span>ucs
+<span style="color: blue; font-weight: bold">import </span>util
+
+
+<span style="color: blue; font-weight: bold">class </span>BlokusFillProblem<span style="font-weight: bold">(</span>SearchProblem<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    A one-player Blokus game as a search problem.
+    This problem is implemented for you. You should NOT change it!
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board <span style="font-weight: bold">= </span>Board<span style="font-weight: bold">(</span>board_w<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span><span style="color: red">1</span><span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">= </span><span style="color: red">0
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_start_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Returns the start state for the search problem
+        """
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board
+
+    <span style="color: blue; font-weight: bold">def </span>is_goal_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        state: Search state
+        Returns True if and only if the state is a valid goal state
+        """
+        </span><span style="color: blue; font-weight: bold">return not </span>any<span style="font-weight: bold">(</span>state<span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">])
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_successors<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        state: Search state
+
+        For a given state, this should return a list of triples,
+        (successor, action, stepCost), where 'successor' is a
+        successor to the current state, 'action' is the action
+        required to get there, and 'stepCost' is the incremental
+        cost of expanding to that successor
+        """
+        </span><span style="color: green; font-style: italic"># Note that for the search problem, there is only one player - #0
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">+ </span><span style="color: red">1
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">[(</span>state<span style="font-weight: bold">.</span>do_move<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">, </span>move<span style="font-weight: bold">), </span>move<span style="font-weight: bold">, </span><span style="color: red">1</span><span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">for </span>move <span style="color: blue; font-weight: bold">in </span>state<span style="font-weight: bold">.</span>get_legal_moves<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">)]
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_cost_of_actions<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>actions<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        actions: A list of actions to take
+
+        This method returns the total cost of a particular sequence of actions.  The sequence must
+        be composed of legal moves
+        """
+        </span><span style="color: blue; font-weight: bold">return </span>len<span style="font-weight: bold">(</span>actions<span style="font-weight: bold">)
+
+
+
+</span><span style="color: green; font-style: italic">#####################################################
+# This portion is incomplete.  Time to write code!  #
+#####################################################
+</span><span style="color: blue; font-weight: bold">class </span>BlokusCornersProblem<span style="font-weight: bold">(</span>SearchProblem<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">= </span><span style="color: red">0
+        "*** YOUR CODE HERE ***"
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_start_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Returns the start state for the search problem
+        """
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board
+
+    <span style="color: blue; font-weight: bold">def </span>is_goal_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+        </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_successors<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        state: Search state
+
+        For a given state, this should return a list of triples,
+        (successor, action, stepCost), where 'successor' is a
+        successor to the current state, 'action' is the action
+        required to get there, and 'stepCost' is the incremental
+        cost of expanding to that successor
+        """
+        </span><span style="color: green; font-style: italic"># Note that for the search problem, there is only one player - #0
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">+ </span><span style="color: red">1
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">[(</span>state<span style="font-weight: bold">.</span>do_move<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">, </span>move<span style="font-weight: bold">), </span>move<span style="font-weight: bold">, </span>move<span style="font-weight: bold">.</span>piece<span style="font-weight: bold">.</span>get_num_tiles<span style="font-weight: bold">()) </span><span style="color: blue; font-weight: bold">for </span>move <span style="color: blue; font-weight: bold">in </span>state<span style="font-weight: bold">.</span>get_legal_moves<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">)]
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_cost_of_actions<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>actions<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        actions: A list of actions to take
+
+        This method returns the total cost of a particular sequence of actions.  The sequence must
+        be composed of legal moves
+        """
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+        </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">def </span>blokus_corners_heuristic<span style="font-weight: bold">(</span>state<span style="font-weight: bold">, </span>problem<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    Your heuristic for the BlokusCornersProblem goes here.
+
+    This heuristic must be consistent to ensure correctness.  First, try to come up
+    with an admissible heuristic; almost all admissible heuristics will be consistent
+    as well.
+
+    If using A* ever finds a solution that is worse uniform cost search finds,
+    your heuristic is *not* consistent, and probably not admissible!  On the other hand,
+    inadmissible or inconsistent heuristics may find optimal solutions, so be careful.
+    """
+    </span><span style="color: red">"*** YOUR CODE HERE ***"
+    </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">class </span>BlokusCoverProblem<span style="font-weight: bold">(</span>SearchProblem<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">), </span>targets<span style="font-weight: bold">=[(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)]):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>targets <span style="font-weight: bold">= </span>targets<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">= </span><span style="color: red">0
+        "*** YOUR CODE HERE ***"
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_start_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Returns the start state for the search problem
+        """
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board
+
+    <span style="color: blue; font-weight: bold">def </span>is_goal_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+        </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_successors<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>state<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        state: Search state
+
+        For a given state, this should return a list of triples,
+        (successor, action, stepCost), where 'successor' is a
+        successor to the current state, 'action' is the action
+        required to get there, and 'stepCost' is the incremental
+        cost of expanding to that successor
+        """
+        </span><span style="color: green; font-style: italic"># Note that for the search problem, there is only one player - #0
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">+ </span><span style="color: red">1
+        </span><span style="color: blue; font-weight: bold">return </span><span style="font-weight: bold">[(</span>state<span style="font-weight: bold">.</span>do_move<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">, </span>move<span style="font-weight: bold">), </span>move<span style="font-weight: bold">, </span>move<span style="font-weight: bold">.</span>piece<span style="font-weight: bold">.</span>get_num_tiles<span style="font-weight: bold">()) </span><span style="color: blue; font-weight: bold">for </span>move <span style="color: blue; font-weight: bold">in </span>state<span style="font-weight: bold">.</span>get_legal_moves<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">)]
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_cost_of_actions<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>actions<span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        actions: A list of actions to take
+
+        This method returns the total cost of a particular sequence of actions.  The sequence must
+        be composed of legal moves
+        """
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+        </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">def </span>blokus_cover_heuristic<span style="font-weight: bold">(</span>state<span style="font-weight: bold">, </span>problem<span style="font-weight: bold">):
+    </span><span style="color: red">"*** YOUR CODE HERE ***"
+    </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">class </span>ClosestLocationSearch<span style="font-weight: bold">:
+    </span><span style="color: darkred">"""
+    In this problem you have to cover all given positions on the board,
+    but the objective is speed, not optimality.
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">), </span>targets<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>expanded <span style="font-weight: bold">= </span><span style="color: red">0
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>targets <span style="font-weight: bold">= </span>targets<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">()
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_start_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Returns the start state for the search problem
+        """
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board
+
+    <span style="color: blue; font-weight: bold">def </span>solve<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        This method should return a sequence of actions that covers all target locations on the board.
+        This time we trade optimality for speed.
+        Therefore, your agent should try and cover one target location at a time. Each time, aiming for the closest uncovered location.
+        You may define helpful functions as you wish.
+
+        Probably a good way to start, would be something like this --
+
+        current_state = self.board.__copy__()
+        backtrace = []
+
+        while ....
+
+            actions = set of actions that covers the closets uncovered target location
+            add actions to backtrace
+
+        return backtrace
+        """
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+        </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+
+
+</span><span style="color: blue; font-weight: bold">class </span>MiniContestSearch<span style="font-weight: bold">:
+    </span><span style="color: darkred">"""
+    Implement your contest entry here
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>board_w<span style="font-weight: bold">, </span>board_h<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">, </span>starting_point<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">), </span>targets<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>targets <span style="font-weight: bold">= </span>targets<span style="font-weight: bold">.</span>copy<span style="font-weight: bold">()
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+
+    </span><span style="color: blue; font-weight: bold">def </span>get_start_state<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Returns the start state for the search problem
+        """
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board
+
+    <span style="color: blue; font-weight: bold">def </span>solve<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: red">"*** YOUR CODE HERE ***"
+        </span>util<span style="font-weight: bold">.</span>raiseNotDefined<span style="font-weight: bold">()
+
+</span>
+  </pre>
+  </body>
+  </html>
+  

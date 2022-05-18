@@ -1,0 +1,110 @@
+<html>
+  <head>
+  <title>2048.py</title>
+  </head>
+  <body>
+  <h3>2048.py (<a href="../2048.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">import </span>argparse
+<span style="color: blue; font-weight: bold">import </span>numpy
+<span style="color: blue; font-weight: bold">import </span>os
+<span style="color: blue; font-weight: bold">import </span>util
+<span style="color: blue; font-weight: bold">from </span>game <span style="color: blue; font-weight: bold">import </span>Game<span style="font-weight: bold">, </span>RandomOpponentAgent
+<span style="color: blue; font-weight: bold">from </span>game_state <span style="color: blue; font-weight: bold">import </span>GameState
+<span style="color: blue; font-weight: bold">from </span>graphics_display <span style="color: blue; font-weight: bold">import </span>GabrieleCirulli2048GraphicsDisplay
+<span style="color: blue; font-weight: bold">from </span>keyboard_agent <span style="color: blue; font-weight: bold">import </span>KeyboardAgent
+
+NUM_OF_INITIAL_TILES <span style="font-weight: bold">= </span><span style="color: red">2
+
+
+</span><span style="color: blue; font-weight: bold">class </span>GameRunner<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>display<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, </span>agent<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, </span>num_of_initial_tiles<span style="font-weight: bold">=</span>NUM_OF_INITIAL_TILES<span style="font-weight: bold">,
+                 </span>sleep_between_actions<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">):
+        </span>super<span style="font-weight: bold">(</span>GameRunner<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">).</span>__init__<span style="font-weight: bold">()
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>sleep_between_actions <span style="font-weight: bold">= </span>sleep_between_actions
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>num_of_initial_tiles <span style="font-weight: bold">= </span>num_of_initial_tiles
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>human_agent <span style="font-weight: bold">= </span>agent <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None
+        </span><span style="color: blue; font-weight: bold">if </span>display <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+            </span>display <span style="font-weight: bold">= </span>GabrieleCirulli2048GraphicsDisplay<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>new_game<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>quit_game<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>human_agent<span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">if </span>agent <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+            </span>agent <span style="font-weight: bold">= </span>KeyboardAgent<span style="font-weight: bold">(</span>display<span style="font-weight: bold">)
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>display <span style="font-weight: bold">= </span>display
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>_agent <span style="font-weight: bold">= </span>agent
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>current_game <span style="font-weight: bold">= </span><span style="color: blue">None
+
+    </span><span style="color: blue; font-weight: bold">def </span>new_game<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>initial_state<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, *</span>args<span style="font-weight: bold">, **</span>kw<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>quit_game<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">if </span>initial_state <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+            </span>initial_state <span style="font-weight: bold">= </span>GameState<span style="font-weight: bold">()
+        </span>opponent_agent <span style="font-weight: bold">= </span>RandomOpponentAgent<span style="font-weight: bold">()
+        </span>game <span style="font-weight: bold">= </span>Game<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_agent<span style="font-weight: bold">, </span>opponent_agent<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>display<span style="font-weight: bold">, </span>sleep_between_actions<span style="font-weight: bold">=</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>sleep_between_actions<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_of_initial_tiles<span style="font-weight: bold">):
+            </span>initial_state<span style="font-weight: bold">.</span>apply_opponent_action<span style="font-weight: bold">(</span>opponent_agent<span style="font-weight: bold">.</span>get_action<span style="font-weight: bold">(</span>initial_state<span style="font-weight: bold">))
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>current_game <span style="font-weight: bold">= </span>game
+        <span style="color: blue; font-weight: bold">return </span>game<span style="font-weight: bold">.</span>run<span style="font-weight: bold">(</span>initial_state<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>quit_game<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>current_game <span style="color: blue; font-weight: bold">is not </span><span style="color: blue">None</span><span style="font-weight: bold">:
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>current_game<span style="font-weight: bold">.</span>quit<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">def </span>create_agent<span style="font-weight: bold">(</span>args<span style="font-weight: bold">):
+    </span><span style="color: blue; font-weight: bold">if </span>args<span style="font-weight: bold">.</span>agent <span style="font-weight: bold">== </span><span style="color: red">'ReflexAgent'</span><span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">from </span>multi_agents <span style="color: blue; font-weight: bold">import </span>ReflexAgent
+        agent <span style="font-weight: bold">= </span>ReflexAgent<span style="font-weight: bold">()
+    </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+        </span>agent <span style="font-weight: bold">= </span>util<span style="font-weight: bold">.</span>lookup<span style="font-weight: bold">(</span><span style="color: red">'multi_agents.' </span><span style="font-weight: bold">+ </span>args<span style="font-weight: bold">.</span>agent<span style="font-weight: bold">, </span>globals<span style="font-weight: bold">())(</span>depth<span style="font-weight: bold">=</span>args<span style="font-weight: bold">.</span>depth<span style="font-weight: bold">,
+                                                                     </span>evaluation_function<span style="font-weight: bold">=</span>args<span style="font-weight: bold">.</span>evaluation_function<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">return </span>agent
+
+
+<span style="color: blue; font-weight: bold">def </span>main<span style="font-weight: bold">():
+    </span>parser <span style="font-weight: bold">= </span>argparse<span style="font-weight: bold">.</span>ArgumentParser<span style="font-weight: bold">(</span>description<span style="font-weight: bold">=</span><span style="color: red">'2048 game.'</span><span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--random_seed'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'The seed for the random state.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span>numpy<span style="font-weight: bold">.</span>random<span style="font-weight: bold">.</span>randint<span style="font-weight: bold">(</span><span style="color: red">100</span><span style="font-weight: bold">), </span>type<span style="font-weight: bold">=</span>int<span style="font-weight: bold">)
+    </span>displays <span style="font-weight: bold">= [</span><span style="color: red">'GUI'</span><span style="font-weight: bold">, </span><span style="color: red">'SummaryDisplay'</span><span style="font-weight: bold">]
+    </span>agents <span style="font-weight: bold">= [</span><span style="color: red">'KeyboardAgent'</span><span style="font-weight: bold">, </span><span style="color: red">'ReflexAgent'</span><span style="font-weight: bold">, </span><span style="color: red">'MinmaxAgent'</span><span style="font-weight: bold">, </span><span style="color: red">'AlphaBetaAgent'</span><span style="font-weight: bold">, </span><span style="color: red">'ExpectimaxAgent'</span><span style="font-weight: bold">]
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--display'</span><span style="font-weight: bold">, </span>choices<span style="font-weight: bold">=</span>displays<span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'The game ui.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span>displays<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>type<span style="font-weight: bold">=</span>str<span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--agent'</span><span style="font-weight: bold">, </span>choices<span style="font-weight: bold">=</span>agents<span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'The agent.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span>agents<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>type<span style="font-weight: bold">=</span>str<span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--depth'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'The maximum depth for to search in the game tree.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span><span style="color: red">2</span><span style="font-weight: bold">, </span>type<span style="font-weight: bold">=</span>int<span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--sleep_between_actions'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'Should sleep between actions.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">, </span>type<span style="font-weight: bold">=</span>bool<span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--num_of_games'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'The number of games to run.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span><span style="color: red">1</span><span style="font-weight: bold">, </span>type<span style="font-weight: bold">=</span>int<span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--num_of_initial_tiles'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'The number non empty tiles when the game started.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span><span style="color: red">2</span><span style="font-weight: bold">,
+                        </span>type<span style="font-weight: bold">=</span>int<span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--initial_board'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'Initial board for new games.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">, </span>type<span style="font-weight: bold">=</span>str<span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_argument<span style="font-weight: bold">(</span><span style="color: red">'--evaluation_function'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'The evaluation function for ai agent.'</span><span style="font-weight: bold">,
+                        </span>default<span style="font-weight: bold">=</span><span style="color: red">'score_evaluation_function'</span><span style="font-weight: bold">, </span>type<span style="font-weight: bold">=</span>str<span style="font-weight: bold">)
+    </span>args <span style="font-weight: bold">= </span>parser<span style="font-weight: bold">.</span>parse_args<span style="font-weight: bold">()
+    </span>numpy<span style="font-weight: bold">.</span>random<span style="font-weight: bold">.</span>seed<span style="font-weight: bold">(</span>args<span style="font-weight: bold">.</span>random_seed<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">if </span>args<span style="font-weight: bold">.</span>display <span style="font-weight: bold">!= </span>displays<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">]:
+        </span>display <span style="font-weight: bold">= </span>util<span style="font-weight: bold">.</span>lookup<span style="font-weight: bold">(</span><span style="color: red">'displays.' </span><span style="font-weight: bold">+ </span>args<span style="font-weight: bold">.</span>display<span style="font-weight: bold">, </span>globals<span style="font-weight: bold">())()
+    </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+        </span>display <span style="font-weight: bold">= </span><span style="color: blue">None
+    </span><span style="color: blue; font-weight: bold">if </span>args<span style="font-weight: bold">.</span>agent <span style="font-weight: bold">!= </span>agents<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">]:
+        </span>agent <span style="font-weight: bold">= </span>create_agent<span style="font-weight: bold">(</span>args<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+        </span>agent <span style="font-weight: bold">= </span><span style="color: blue">None
+    </span>initial_state <span style="font-weight: bold">= </span><span style="color: blue">None
+    </span><span style="color: blue; font-weight: bold">if </span>args<span style="font-weight: bold">.</span>initial_board <span style="color: blue; font-weight: bold">is not </span><span style="color: blue">None</span><span style="font-weight: bold">:
+        </span>with open<span style="font-weight: bold">(</span>os<span style="font-weight: bold">.</span>path<span style="font-weight: bold">.</span>join<span style="font-weight: bold">(</span><span style="color: red">'layouts'</span><span style="font-weight: bold">, </span>args<span style="font-weight: bold">.</span>initial_board<span style="font-weight: bold">), </span><span style="color: red">'r'</span><span style="font-weight: bold">) </span>as f<span style="font-weight: bold">:
+            </span>lines <span style="font-weight: bold">= </span>f<span style="font-weight: bold">.</span>readlines<span style="font-weight: bold">()
+            </span>initial_board <span style="font-weight: bold">= </span>numpy<span style="font-weight: bold">.</span>array<span style="font-weight: bold">([</span>list<span style="font-weight: bold">(</span>map<span style="font-weight: bold">(</span><span style="color: blue; font-weight: bold">lambda </span>x<span style="font-weight: bold">: </span>int<span style="font-weight: bold">(</span>x<span style="font-weight: bold">), </span>line<span style="font-weight: bold">.</span>split<span style="font-weight: bold">(</span><span style="color: red">','</span><span style="font-weight: bold">))) </span><span style="color: blue; font-weight: bold">for </span>line <span style="color: blue; font-weight: bold">in </span>lines<span style="font-weight: bold">])
+            </span>initial_state <span style="font-weight: bold">= </span>GameState<span style="font-weight: bold">(</span>board<span style="font-weight: bold">=</span>initial_board<span style="font-weight: bold">)
+    </span>game_runner <span style="font-weight: bold">= </span>GameRunner<span style="font-weight: bold">(</span>display<span style="font-weight: bold">=</span>display<span style="font-weight: bold">, </span>agent<span style="font-weight: bold">=</span>agent<span style="font-weight: bold">, </span>num_of_initial_tiles<span style="font-weight: bold">=</span>args<span style="font-weight: bold">.</span>num_of_initial_tiles<span style="font-weight: bold">,
+                             </span>sleep_between_actions<span style="font-weight: bold">=</span>args<span style="font-weight: bold">.</span>sleep_between_actions<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">for </span>i <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span>args<span style="font-weight: bold">.</span>num_of_games<span style="font-weight: bold">):
+        </span>score <span style="font-weight: bold">= </span>game_runner<span style="font-weight: bold">.</span>new_game<span style="font-weight: bold">(</span>initial_state<span style="font-weight: bold">=</span>initial_state<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">if </span>display <span style="color: blue; font-weight: bold">is not </span><span style="color: blue">None</span><span style="font-weight: bold">:
+        </span>display<span style="font-weight: bold">.</span>print_stats<span style="font-weight: bold">()
+
+
+</span><span style="color: blue; font-weight: bold">if </span>__name__ <span style="font-weight: bold">== </span><span style="color: red">'__main__'</span><span style="font-weight: bold">:
+    </span>main<span style="font-weight: bold">()
+    </span>input<span style="font-weight: bold">(</span><span style="color: red">"Press Enter to continue..."</span><span style="font-weight: bold">)
+</span>
+  </pre>
+  </body>
+  </html>
+  

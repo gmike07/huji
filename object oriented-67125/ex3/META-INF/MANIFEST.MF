@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Sealed: true
+Class-Path: hotels_dataset.txt hotels_tst1.txt hotels_tst2.txt legalIt
+ ems.json
+

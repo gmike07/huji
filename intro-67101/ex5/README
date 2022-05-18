@@ -1,0 +1,138 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex1:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 3 files:
+
+README - this file
+wordsearch.py - a file gets inputs and output all words that appear in the
+                TIFZORET input and how many times it appears in the
+                given directions
+check_wordsearch.py - a file that debugs the num_matrix_contains_word
+            function in wordsearch.py
+
+======================
+=  Special Comments  =
+======================
+
+check_wordsearch:
+
+input: ["", [[]], 1, 0]
+the first check tests if the function can work correctly for empty matrix
+
+input: ["d", [[]], 1, 0]
+the second check test if the function works correctly for a string
+   longer than the matrix in the X direction
+
+input: ["d", [[]], 0, 1]
+the third check test if the function works correctly for a string
+   longer than the matrix in the Y direction
+
+input: ["dad", [['d', 'a', 'd']], 1, 0]
+the fourth check test if the function works correctly for finding a string
+     in the x dir string
+
+input: ["dad", [['d'], ['a'], ['d'], ['a'], ['d']], 0, 1]
+the fifth check test if the function works correctly for finding multiple
+      strings in the y dir string
+
+
+DESIGN TO WORDSEARCH FUNCTIONS (top down design):
+
+main_program():
+    the function processes the files if the inputs are valid
+        else print why are they valid
+    uses check_input_args(args) to check the validity of the inputs
+    uses process_files(words_file_path, matrix_file_path, output_file_path,
+    directions) to process the file if the inputs are valid
+
+
+check_input_args(args):
+    returns if the inputs are correct it returns None, else returns the Error
+    uses handle_wrong_inputs(words_file_path, matrix_file_path, directions)
+        to check if most of the args are valid
+
+process_files(words_file_path, matrix_file_path, output_file_path,
+                  directions):
+    the functions call the function to read the files and to output the results
+    uses read_wordlist_file(words_file_path) to read the words file
+    uses read_matrix_file(matrix_file_path) to read the matrix file
+    uses find_words_in_matrix(word_list, matrix, directions) return the results
+    uses write_output_file(results, output_file_path)
+        to write to the file the results
+
+write_output_file(results, output_file_path):
+    the function outputs the results to the output file, in the next format:
+        key, value + \n
+
+handle_wrong_inputs:
+    returns why aren't they valid if the aren't valid, else None
+    uses file_doesnt_exists(file_path) to check the file validity
+    and uses correct_direction_input(directions)
+        to check the directions validity
+
+read_wordlist_file(filename):
+    returns a list of all words in the file
+            (Every word is in a new line in the file)
+
+read_matrix_file(filename):
+    returns a matrix of all letters in the file
+            (Every letter is separated by ,)
+
+file_doesnt_exists(file_path):
+    returns true if it is NOT a file, else false
+
+correct_direction_input(directions):
+    returns true if all directions are valid, else false
+
+
+find_words_in_matrix(word_list, matrix, directions):
+    returns a list of tuples that contain
+        words that appeared more than once in the matrix
+        in all the specified directions,
+        with the number of times it the word appeared
+    uses update_dictionary(dict1, dict2) to update after each direction call
+    and find_words_in_direction(word_list, matrix, direction)
+                to get a dictionary of the direction
+    and convert_dictionary_to_list(dict) to convert dictionary
+                to the correct output format
+
+convert_dictionary_to_list(dict):
+    returns the dictionary as a list of tuples of type:
+        (key, value)
+
+update_dictionary(dict1, dict2):
+    updates the first dictionary with the second's values,
+    if the first has that value, then it becomes the addition,
+    else the first dictionary doesn't have the value
+        so set the first one to contain the second's value
+
+find_words_in_direction(word_list, matrix, direction):
+    returns a dictionary of words that appeared more than once in the matrix
+        in the specified direction,
+        with the number of times it the word appeared
+    uses num_matrix_contains_word to calc how many times the word appeared
+
+num_matrix_contains_word(word, matrix, x_dir, y_dir):
+    returns the number of times the word appears in a direction,
+    for every x,y in the checks using a function to check if it fits there
+    the function uses matrix call matrix_contains_word_in_xy
+                to check each place in the matrix
+
+matrix_contains_word_in_xy(word, matrix, x, y, x_dir, y_dir):
+    returns true if the word is in the matrix from (x,y)
+        to (x + x_dir *(n-1), y + y_dir *(n-1)), else false
+    uses is_out_of_bounds(index, max_index) to check
+                there won't be an error of index
+
+is_out_of_bounds(index, max_index):
+    determines if the index is in the range or arr[index] is an error

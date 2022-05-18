@@ -1,0 +1,81 @@
+mikeg, meitar
+Mike Greenbaum (211747639), Meitar Sela (322396243)
+EX: 3
+
+FILES:
+MapReduceFramework.cpp -- The main file asked in the Excercise.
+Barrier.cpp -- The file that is responsible for the barrier.
+Barrier.h -- a header to the barrier :)
+Makefile -- implement the make operation
+fileWordCounter_comparison.png - the graph of the run time over the threads.
+README -- this file :)
+
+REMARKS:
+These are some remarks that
+I want the graders to know
+about this submission.
+
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+Address sizes:       46 bits physical, 48 bits virtual
+CPU(s):              24
+On-line CPU(s) list: 0-23
+Thread(s) per core:  2
+Core(s) per socket:  6
+Socket(s):           2
+NUMA node(s):        2
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               45
+Model name:          Intel(R) Xeon(R) CPU E5-2630 0 @ 2.30GHz
+Stepping:            7
+CPU MHz:             2703.343
+CPU max MHz:         2800.0000
+CPU min MHz:         1200.0000
+BogoMIPS:            4599.76
+Virtualization:      VT-x
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            256K
+L3 cache:            15360K
+NUMA node0 CPU(s):   0-5,12-17
+NUMA node1 CPU(s):   6-11,18-23
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush
+ dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs
+ bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx
+ smx est tm2 ssse3 cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave
+ avx lahf_lm pti tpr_shadow vnmi flexpriority ept vpid xsaveopt dtherm ida arat pln pts
+
+
+Graph Explanation:
+We can see in the graph that with a small number of threads, the amount of time is very big.
+Also, we can see that from about 8 threads or higher - the number of threads does not matter and
+the time is similar.
+The reason for that is that the files contain about 8 "heavy" files (that are bigger than the others)
+and therefore if working with less than 9 threads they need to wait more time because they do not do
+ the "heavy" work simultaneously. Also, the
+computer architecture allows more than 8 threads (because there are 24 cores)
+so using more threads is indeed efficient. For a high amount of threads, obviously the "light" files
+finish fast and the threads wait for the "heavy" work to finish
+and that is why it does not really matter how many threads to have from a certain limit.
+
+
+ANSWERS - PART 2:
+
+Q1:
+For tasks that require a hard computational power, it is
+possible to use kernel level threads because each thread can
+run on a different core. Therefore, In a x-core CPU the optimal
+number of threads is x.
+
+Note: that is only the option if the program is divisible to small tasks that each one
+requires a core. If that is not the case, and "CPU bound" means it is not divisible then
+the optimal number of threads is clearly 1.
+
+Q2a:
+The number of lines will be 2n - first all the children processes will finish
+and then the original processes.
+
+Q2b:
+according to the explanation from the 2a, there are n! * n! options.

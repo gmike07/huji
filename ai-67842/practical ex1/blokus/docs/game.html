@@ -1,0 +1,249 @@
+<html>
+  <head>
+  <title>game.py</title>
+  </head>
+  <body>
+  <h3>game.py (<a href="../game.py">original</a>)</h3>
+  <hr>
+  <pre>
+<span style="color: blue; font-weight: bold">from </span>inputs <span style="color: blue; font-weight: bold">import </span>RandomInput
+<span style="color: blue; font-weight: bold">from </span>pieces <span style="color: blue; font-weight: bold">import </span>PieceList
+<span style="color: blue; font-weight: bold">from </span>blokus_problems <span style="color: blue; font-weight: bold">import </span><span style="font-weight: bold">*
+</span><span style="color: blue; font-weight: bold">from </span>search <span style="color: blue; font-weight: bold">import </span>astar
+<span style="color: blue; font-weight: bold">from </span>displays <span style="color: blue; font-weight: bold">import </span>GuiDisplay
+<span style="color: blue; font-weight: bold">import </span>sys
+<span style="color: blue; font-weight: bold">import </span>os
+<span style="color: blue; font-weight: bold">import </span>ast
+
+
+<span style="color: blue; font-weight: bold">class </span>GameEngine<span style="font-weight: bold">(</span>object<span style="font-weight: bold">):
+    </span><span style="color: darkred">"""
+    Game engine class stores the current game state and controls when to
+    get input/draw output
+    """
+
+    </span><span style="color: blue; font-weight: bold">def </span>__init__<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">, </span>inputs<span style="font-weight: bold">, </span>width<span style="font-weight: bold">, </span>height<span style="font-weight: bold">, </span>piece_list<span style="font-weight: bold">):
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>display <span style="font-weight: bold">= </span>GuiDisplay<span style="font-weight: bold">(</span>width<span style="font-weight: bold">, </span>height<span style="font-weight: bold">, </span>title<span style="font-weight: bold">=</span><span style="color: red">'Intro to AI -- 67842 -- Ex1'</span><span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>inputs <span style="font-weight: bold">= </span>inputs
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>piece_list <span style="font-weight: bold">= </span>piece_list
+
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players <span style="font-weight: bold">= </span>len<span style="font-weight: bold">(</span>inputs<span style="font-weight: bold">)
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">= </span>width
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">= </span>height
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>turn_num <span style="font-weight: bold">= </span><span style="color: red">0
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>passed <span style="font-weight: bold">= [</span><span style="color: blue; font-weight: bold">False</span><span style="font-weight: bold">] * </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>score <span style="font-weight: bold">= [</span><span style="color: red">0</span><span style="font-weight: bold">] * </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players
+        <span style="color: blue">self</span><span style="font-weight: bold">.</span>board <span style="font-weight: bold">= </span>Board<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>piece_list<span style="font-weight: bold">)
+
+        </span><span style="color: green; font-style: italic"># Set up initial corners for each player
+        </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players <span style="font-weight: bold">&gt; </span><span style="color: red">1</span><span style="font-weight: bold">:
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+            if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players <span style="font-weight: bold">&gt; </span><span style="color: red">2</span><span style="font-weight: bold">:
+                </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span><span style="color: red">2</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+                if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players <span style="font-weight: bold">&gt; </span><span style="color: red">3</span><span style="font-weight: bold">:
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>connected<span style="font-weight: bold">[</span><span style="color: red">3</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+
+    def </span>play_turn<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Play a single round of turns.
+
+        Check for empty moves from the inputs (signalling passes) and ask for 
+        new moves if illegal moves are provided.
+        """
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>turn_num <span style="font-weight: bold">+= </span><span style="color: red">1
+        </span><span style="color: green; font-style: italic"># print "Starting turn %d" % self.turn_num
+
+        </span><span style="color: blue; font-weight: bold">for </span>p <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">if </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>passed<span style="font-weight: bold">[</span>p<span style="font-weight: bold">]:
+                </span><span style="color: blue; font-weight: bold">continue
+
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>display<span style="font-weight: bold">.</span>draw_board<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">)
+            </span><span style="color: blue; font-weight: bold">while True</span><span style="font-weight: bold">:
+                </span>move <span style="font-weight: bold">= </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>inputs<span style="font-weight: bold">[</span>p<span style="font-weight: bold">].</span>get_move<span style="font-weight: bold">(</span>p<span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">)
+                </span><span style="color: blue; font-weight: bold">if </span>move <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>passed<span style="font-weight: bold">[</span>p<span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">True
+                    break
+                if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">[</span>p<span style="font-weight: bold">, </span>move<span style="font-weight: bold">.</span>piece_index<span style="font-weight: bold">]:
+                    </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"Error: piece has already been used. Try again:"</span><span style="font-weight: bold">)
+                    </span><span style="color: blue; font-weight: bold">continue
+                try</span><span style="font-weight: bold">:
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>score<span style="font-weight: bold">[</span>p<span style="font-weight: bold">] += </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>add_move<span style="font-weight: bold">(</span>p<span style="font-weight: bold">, </span>move<span style="font-weight: bold">)
+                    </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>pieces<span style="font-weight: bold">[</span>p<span style="font-weight: bold">, </span>move<span style="font-weight: bold">.</span>piece_index<span style="font-weight: bold">] = </span><span style="color: blue; font-weight: bold">False
+                    break
+                except </span>ValueError<span style="font-weight: bold">:
+                    </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"Error: move is illegal. Try again:"</span><span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">def </span>all_players_passed<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: darkred">"""
+        Return True if all players have passed.
+        """
+        </span><span style="color: blue; font-weight: bold">for </span>p <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">if not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>passed<span style="font-weight: bold">[</span>p<span style="font-weight: bold">]:
+                </span><span style="color: blue; font-weight: bold">return False
+        return True
+
+    def </span>_print_scores<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">for </span>p <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>num_players<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"Player %d: %d pts" </span><span style="font-weight: bold">% (</span>p <span style="font-weight: bold">+ </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>score<span style="font-weight: bold">[</span>p<span style="font-weight: bold">]))
+
+    </span><span style="color: blue; font-weight: bold">def </span>play_game<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">):
+        </span><span style="color: blue; font-weight: bold">if </span>len<span style="font-weight: bold">(</span><span style="color: blue">self</span><span style="font-weight: bold">.</span>inputs<span style="font-weight: bold">) != </span><span style="color: red">4</span><span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"Error: Need 4 players for a game. "</span><span style="font-weight: bold">)
+            </span>sys<span style="font-weight: bold">.</span>exit<span style="font-weight: bold">(</span><span style="color: red">1</span><span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">while not </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>all_players_passed<span style="font-weight: bold">():
+            </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>play_turn<span style="font-weight: bold">()
+
+        </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>_print_scores<span style="font-weight: bold">()
+        </span><span style="color: blue; font-weight: bold">return </span><span style="color: blue">self</span><span style="font-weight: bold">.</span>score
+
+
+<span style="color: blue; font-weight: bold">def </span>play_simple_search<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">, </span>search_func<span style="font-weight: bold">):
+    </span>back_trace <span style="font-weight: bold">= </span>search_func<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">)
+    </span>display <span style="font-weight: bold">= </span>GuiDisplay<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>board_w<span style="font-weight: bold">, </span>problem<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">, </span>title<span style="font-weight: bold">=</span><span style="color: red">'Intro to AI -- 67842 -- Ex1'</span><span style="font-weight: bold">)
+    </span>board <span style="font-weight: bold">= </span>problem<span style="font-weight: bold">.</span>get_start_state<span style="font-weight: bold">()
+    </span><span style="color: blue; font-weight: bold">if </span>problem<span style="font-weight: bold">.</span>__class__ <span style="font-weight: bold">== </span>BlokusCornersProblem<span style="font-weight: bold">:
+        </span>dots <span style="font-weight: bold">= [(</span>board<span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">), (</span><span style="color: red">0</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">), (</span>board<span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)]
+    </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">try</span><span style="font-weight: bold">:
+            </span>dots <span style="font-weight: bold">= </span>problem<span style="font-weight: bold">.</span>targets
+        <span style="color: blue; font-weight: bold">except </span>AttributeError<span style="font-weight: bold">:
+            </span>dots <span style="font-weight: bold">= []
+    </span><span style="color: blue; font-weight: bold">for </span>action <span style="color: blue; font-weight: bold">in </span>back_trace<span style="font-weight: bold">:
+        </span>board<span style="font-weight: bold">.</span>add_move<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">, </span>action<span style="font-weight: bold">)
+        </span>display<span style="font-weight: bold">.</span>draw_board<span style="font-weight: bold">(</span>board<span style="font-weight: bold">, </span>dots<span style="font-weight: bold">=</span>dots<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"Expanded nodes: %d, score: %d" </span><span style="font-weight: bold">% (</span>problem<span style="font-weight: bold">.</span>expanded<span style="font-weight: bold">, </span>board<span style="font-weight: bold">.</span>score<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">)))
+
+
+</span><span style="color: blue; font-weight: bold">def </span>play_a_star_search<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">, </span>heuristic<span style="font-weight: bold">):
+    </span>back_trace <span style="font-weight: bold">= </span>astar<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">, </span>heuristic<span style="font-weight: bold">)
+    </span>display <span style="font-weight: bold">= </span>GuiDisplay<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>board_w<span style="font-weight: bold">, </span>problem<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">, </span>title<span style="font-weight: bold">=</span><span style="color: red">'Intro to AI -- 67842 -- Ex1'</span><span style="font-weight: bold">)
+    </span>board <span style="font-weight: bold">= </span>problem<span style="font-weight: bold">.</span>get_start_state<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">if </span>problem<span style="font-weight: bold">.</span>__class__ <span style="font-weight: bold">== </span>BlokusCornersProblem<span style="font-weight: bold">:
+        </span>dots <span style="font-weight: bold">= [(</span>board<span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">), (</span><span style="color: red">0</span><span style="font-weight: bold">, </span>board<span style="font-weight: bold">.</span>board_w <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">), (</span>board<span style="font-weight: bold">.</span>board_h <span style="font-weight: bold">- </span><span style="color: red">1</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">)]
+    </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">try</span><span style="font-weight: bold">:
+            </span>dots <span style="font-weight: bold">= </span>problem<span style="font-weight: bold">.</span>targets
+        <span style="color: blue; font-weight: bold">except </span>AttributeError<span style="font-weight: bold">:
+            </span>dots <span style="font-weight: bold">= []
+
+    </span><span style="color: blue; font-weight: bold">for </span>action <span style="color: blue; font-weight: bold">in </span>back_trace<span style="font-weight: bold">:
+        </span>board<span style="font-weight: bold">.</span>add_move<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">, </span>action<span style="font-weight: bold">)
+        </span>display<span style="font-weight: bold">.</span>draw_board<span style="font-weight: bold">(</span>board<span style="font-weight: bold">, </span>dots<span style="font-weight: bold">=</span>dots<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"Expanded nodes: %d, score: %d" </span><span style="font-weight: bold">% (</span>problem<span style="font-weight: bold">.</span>expanded<span style="font-weight: bold">, </span>board<span style="font-weight: bold">.</span>score<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">)))
+
+
+</span><span style="color: blue; font-weight: bold">def </span>play_approximate_search<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">):
+    </span>back_trace <span style="font-weight: bold">= </span>problem<span style="font-weight: bold">.</span>solve<span style="font-weight: bold">()
+    </span>display <span style="font-weight: bold">= </span>GuiDisplay<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>board_w<span style="font-weight: bold">, </span>problem<span style="font-weight: bold">.</span>board<span style="font-weight: bold">.</span>board_h<span style="font-weight: bold">, </span>title<span style="font-weight: bold">=</span><span style="color: red">'Intro to AI -- 67842 -- Ex1'</span><span style="font-weight: bold">)
+    </span>board <span style="font-weight: bold">= </span>problem<span style="font-weight: bold">.</span>get_start_state<span style="font-weight: bold">()
+    </span><span style="color: blue; font-weight: bold">for </span>action <span style="color: blue; font-weight: bold">in </span>back_trace<span style="font-weight: bold">:
+        </span>board<span style="font-weight: bold">.</span>add_move<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">, </span>action<span style="font-weight: bold">)
+        </span>display<span style="font-weight: bold">.</span>draw_board<span style="font-weight: bold">(</span>board<span style="font-weight: bold">, </span>dots<span style="font-weight: bold">=</span>problem<span style="font-weight: bold">.</span>targets<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">print</span><span style="font-weight: bold">(</span><span style="color: red">"Expanded nodes: %d, score: %d" </span><span style="font-weight: bold">% (</span>problem<span style="font-weight: bold">.</span>expanded<span style="font-weight: bold">, </span>board<span style="font-weight: bold">.</span>score<span style="font-weight: bold">(</span><span style="color: red">0</span><span style="font-weight: bold">)))
+
+
+</span><span style="color: blue; font-weight: bold">def </span>load_heuristic<span style="font-weight: bold">(</span>heuristic_name<span style="font-weight: bold">):
+    </span><span style="color: green; font-style: italic"># Looks through all pythonPath Directories for the right function
+    </span>python_path_str <span style="font-weight: bold">= </span>os<span style="font-weight: bold">.</span>path<span style="font-weight: bold">.</span>expandvars<span style="font-weight: bold">(</span><span style="color: red">"$PYTHONPATH"</span><span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">if </span>python_path_str<span style="font-weight: bold">.</span>find<span style="font-weight: bold">(</span><span style="color: red">';'</span><span style="font-weight: bold">) == -</span><span style="color: red">1</span><span style="font-weight: bold">:
+        </span>python_path_dirs <span style="font-weight: bold">= </span>python_path_str<span style="font-weight: bold">.</span>split<span style="font-weight: bold">(</span><span style="color: red">':'</span><span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+        </span>python_path_dirs <span style="font-weight: bold">= </span>python_path_str<span style="font-weight: bold">.</span>split<span style="font-weight: bold">(</span><span style="color: red">';'</span><span style="font-weight: bold">)
+    </span>python_path_dirs<span style="font-weight: bold">.</span>append<span style="font-weight: bold">(</span><span style="color: red">'.'</span><span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">for </span>moduleDir <span style="color: blue; font-weight: bold">in </span>python_path_dirs<span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">if not </span>os<span style="font-weight: bold">.</span>path<span style="font-weight: bold">.</span>isdir<span style="font-weight: bold">(</span>moduleDir<span style="font-weight: bold">):
+            </span><span style="color: blue; font-weight: bold">continue
+        </span>module_names <span style="font-weight: bold">= [</span>f <span style="color: blue; font-weight: bold">for </span>f <span style="color: blue; font-weight: bold">in </span>os<span style="font-weight: bold">.</span>listdir<span style="font-weight: bold">(</span>moduleDir<span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">if </span>os<span style="font-weight: bold">.</span>path<span style="font-weight: bold">.</span>isfile<span style="font-weight: bold">(</span>f<span style="font-weight: bold">)]
+        </span><span style="color: blue; font-weight: bold">for </span>module_name <span style="color: blue; font-weight: bold">in </span>module_names<span style="font-weight: bold">:
+            </span><span style="color: blue; font-weight: bold">try</span><span style="font-weight: bold">:
+                </span>module <span style="font-weight: bold">= </span>__import__<span style="font-weight: bold">(</span>str<span style="font-weight: bold">(</span>module_name<span style="font-weight: bold">[:-</span><span style="color: red">3</span><span style="font-weight: bold">]))
+            </span><span style="color: blue; font-weight: bold">except </span>ImportError<span style="font-weight: bold">:
+                </span><span style="color: blue; font-weight: bold">continue
+            if </span>heuristic_name <span style="color: blue; font-weight: bold">in </span>dir<span style="font-weight: bold">(</span>module<span style="font-weight: bold">):
+                </span><span style="color: blue; font-weight: bold">return </span>getattr<span style="font-weight: bold">(</span>module<span style="font-weight: bold">, </span>heuristic_name<span style="font-weight: bold">)
+    </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">'The function ' </span><span style="font-weight: bold">+ </span>heuristic_name <span style="font-weight: bold">+ </span><span style="color: red">' was not found.'</span><span style="font-weight: bold">)
+
+
+</span><span style="color: blue; font-weight: bold">def </span>main<span style="font-weight: bold">():
+    </span><span style="color: darkred">"""
+    Processes the command used to run the game from the command line.
+    """
+    </span><span style="color: blue; font-weight: bold">from </span>optparse <span style="color: blue; font-weight: bold">import </span>OptionParser
+    usage_str <span style="font-weight: bold">= </span><span style="color: darkred">"""
+    USAGE:      python game.py &lt;options&gt;
+    EXAMPLES:  (1) python game.py
+                  - starts a game between 4 random agents
+               (2) python game.py -p tiny_set.txt -s 4 7
+               OR  python game.py -s 14 14 -f ucs -z cover [(1, 1), (5, 9), (9, 6)]
+    """
+    </span>parser <span style="font-weight: bold">= </span>OptionParser<span style="font-weight: bold">(</span>usage_str<span style="font-weight: bold">)
+
+    </span>parser<span style="font-weight: bold">.</span>add_option<span style="font-weight: bold">(</span><span style="color: red">'-p'</span><span style="font-weight: bold">, </span><span style="color: red">'--pieces'</span><span style="font-weight: bold">, </span>dest<span style="font-weight: bold">=</span><span style="color: red">'pieces_file'</span><span style="font-weight: bold">,
+                      </span>help<span style="font-weight: bold">=</span><span style="color: red">'the file to read for the list of pieces'</span><span style="font-weight: bold">,
+                      </span>default<span style="font-weight: bold">=</span><span style="color: red">'valid_pieces.txt'</span><span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_option<span style="font-weight: bold">(</span><span style="color: red">'-s'</span><span style="font-weight: bold">, </span><span style="color: red">'--board-size'</span><span style="font-weight: bold">, </span>dest<span style="font-weight: bold">=</span><span style="color: red">'size'</span><span style="font-weight: bold">,
+                      </span>type<span style="font-weight: bold">=</span><span style="color: red">'int'</span><span style="font-weight: bold">, </span>nargs<span style="font-weight: bold">=</span><span style="color: red">2</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'the size of the game board.'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=(</span><span style="color: red">20</span><span style="font-weight: bold">, </span><span style="color: red">20</span><span style="font-weight: bold">))
+    </span>parser<span style="font-weight: bold">.</span>add_option<span style="font-weight: bold">(</span><span style="color: red">'-f'</span><span style="font-weight: bold">, </span><span style="color: red">'--search-function'</span><span style="font-weight: bold">, </span>dest<span style="font-weight: bold">=</span><span style="color: red">'search_func'</span><span style="font-weight: bold">,
+                      </span>metavar<span style="font-weight: bold">=</span><span style="color: red">'FUNC'</span><span style="font-weight: bold">, </span>help<span style="font-weight: bold">=</span><span style="color: red">'search function to use. This option is ignored for sub-optimal search. '</span><span style="font-weight: bold">,
+                      </span>type<span style="font-weight: bold">=</span><span style="color: red">'choice'</span><span style="font-weight: bold">,
+                      </span>choices<span style="font-weight: bold">=[</span><span style="color: red">'dfs'</span><span style="font-weight: bold">, </span><span style="color: red">'bfs'</span><span style="font-weight: bold">, </span><span style="color: red">'ucs'</span><span style="font-weight: bold">, </span><span style="color: red">'astar'</span><span style="font-weight: bold">], </span>default<span style="font-weight: bold">=</span><span style="color: red">'dfs'</span><span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_option<span style="font-weight: bold">(</span><span style="color: red">'-H'</span><span style="font-weight: bold">, </span><span style="color: red">'--heuristic'</span><span style="font-weight: bold">, </span>dest<span style="font-weight: bold">=</span><span style="color: red">'h_func'</span><span style="font-weight: bold">,
+                      </span>help<span style="font-weight: bold">=</span>'heuristic function to use <span style="color: blue; font-weight: bold">for </span>A<span style="font-weight: bold">* </span>search<span style="font-weight: bold">. </span>\
+                      This option <span style="color: blue; font-weight: bold">is </span>ignored <span style="color: blue; font-weight: bold">for </span>other search functions<span style="font-weight: bold">. </span>'<span style="font-weight: bold">,
+                      </span>metavar<span style="font-weight: bold">=</span><span style="color: red">'FUNC'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_option<span style="font-weight: bold">(</span><span style="color: red">'-z'</span><span style="font-weight: bold">, </span><span style="color: red">'--puzzle'</span><span style="font-weight: bold">, </span>dest<span style="font-weight: bold">=</span><span style="color: red">'puzzle'</span><span style="font-weight: bold">,
+                      </span>help<span style="font-weight: bold">=</span><span style="color: red">'the type of puzzle being solved'</span><span style="font-weight: bold">, </span>type<span style="font-weight: bold">=</span><span style="color: red">'choice'</span><span style="font-weight: bold">,
+                      </span>choices<span style="font-weight: bold">=[</span><span style="color: red">'fill'</span><span style="font-weight: bold">, </span><span style="color: red">'diagonal'</span><span style="font-weight: bold">, </span><span style="color: red">'corners'</span><span style="font-weight: bold">, </span><span style="color: red">'cover'</span><span style="font-weight: bold">, </span><span style="color: red">'sub-optimal'</span><span style="font-weight: bold">, </span><span style="color: red">'mini-contest'</span><span style="font-weight: bold">], </span>default<span style="font-weight: bold">=</span><span style="color: blue">None</span><span style="font-weight: bold">)
+    </span>parser<span style="font-weight: bold">.</span>add_option<span style="font-weight: bold">(</span><span style="color: red">'-x'</span><span style="font-weight: bold">, </span><span style="color: red">'--start-point'</span><span style="font-weight: bold">, </span>dest<span style="font-weight: bold">=</span><span style="color: red">'start'</span><span style="font-weight: bold">, </span>type<span style="font-weight: bold">=</span><span style="color: red">'int'</span><span style="font-weight: bold">, </span>nargs<span style="font-weight: bold">=</span><span style="color: red">2</span><span style="font-weight: bold">,
+                      </span>help<span style="font-weight: bold">=</span><span style="color: red">'starting point'</span><span style="font-weight: bold">, </span>default<span style="font-weight: bold">=(</span><span style="color: red">0</span><span style="font-weight: bold">, </span><span style="color: red">0</span><span style="font-weight: bold">))
+
+    </span>options<span style="font-weight: bold">, </span>cover_points <span style="font-weight: bold">= </span>parser<span style="font-weight: bold">.</span>parse_args<span style="font-weight: bold">()
+    </span><span style="color: blue; font-weight: bold">if </span><span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'cover' </span><span style="color: blue; font-weight: bold">or </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'sub-optimal'</span><span style="font-weight: bold">) </span><span style="color: blue; font-weight: bold">and </span>len<span style="font-weight: bold">(</span>cover_points<span style="font-weight: bold">) == </span><span style="color: red">0</span><span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">'cover puzzles require at least one point to cover!'</span><span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">if </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'cover' </span><span style="color: blue; font-weight: bold">or </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'sub-optimal' </span><span style="color: blue; font-weight: bold">or </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'mini-contest'</span><span style="font-weight: bold">:
+        </span>targets <span style="font-weight: bold">= </span>ast<span style="font-weight: bold">.</span>literal_eval<span style="font-weight: bold">(</span><span style="color: red">''</span><span style="font-weight: bold">.</span>join<span style="font-weight: bold">(</span>cover_points<span style="font-weight: bold">))
+
+    </span>piece_list <span style="font-weight: bold">= </span>PieceList<span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>pieces_file<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">if </span>options<span style="font-weight: bold">.</span>puzzle <span style="color: blue; font-weight: bold">is </span><span style="color: blue">None</span><span style="font-weight: bold">:
+        </span>inputs <span style="font-weight: bold">= [</span>RandomInput<span style="font-weight: bold">() </span><span style="color: blue; font-weight: bold">for </span>_ <span style="color: blue; font-weight: bold">in </span>range<span style="font-weight: bold">(</span><span style="color: red">4</span><span style="font-weight: bold">)]
+        </span>engine <span style="font-weight: bold">= </span>GameEngine<span style="font-weight: bold">(</span>inputs<span style="font-weight: bold">, </span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">], </span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>piece_list<span style="font-weight: bold">)
+        </span>engine<span style="font-weight: bold">.</span>play_game<span style="font-weight: bold">()
+
+    </span><span style="color: blue; font-weight: bold">elif </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'sub-optimal'</span><span style="font-weight: bold">:
+        </span>problem <span style="font-weight: bold">= </span>ClosestLocationSearch<span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">], </span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>piece_list<span style="font-weight: bold">, </span>options<span style="font-weight: bold">.</span>start<span style="font-weight: bold">, </span>targets<span style="font-weight: bold">)
+        </span>play_approximate_search<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">elif </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'mini-contest'</span><span style="font-weight: bold">:
+        </span>problem <span style="font-weight: bold">= </span>MiniContestSearch<span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">], </span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>piece_list<span style="font-weight: bold">, </span>options<span style="font-weight: bold">.</span>start<span style="font-weight: bold">, </span>targets<span style="font-weight: bold">)
+        </span>play_approximate_search<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">)
+
+    </span><span style="color: blue; font-weight: bold">elif </span>options<span style="font-weight: bold">.</span>search_func <span style="color: blue; font-weight: bold">in </span><span style="font-weight: bold">[</span><span style="color: red">'dfs'</span><span style="font-weight: bold">, </span><span style="color: red">'bfs'</span><span style="font-weight: bold">, </span><span style="color: red">'ucs'</span><span style="font-weight: bold">, </span><span style="color: red">'astar'</span><span style="font-weight: bold">]:
+        </span><span style="color: blue; font-weight: bold">if </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'fill'</span><span style="font-weight: bold">:
+            </span>problem <span style="font-weight: bold">= </span>BlokusFillProblem<span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">], </span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>piece_list<span style="font-weight: bold">, </span>options<span style="font-weight: bold">.</span>start<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">elif </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'corners'</span><span style="font-weight: bold">:
+            </span>problem <span style="font-weight: bold">= </span>BlokusCornersProblem<span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">], </span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>piece_list<span style="font-weight: bold">, </span>options<span style="font-weight: bold">.</span>start<span style="font-weight: bold">)
+        </span><span style="color: blue; font-weight: bold">elif </span>options<span style="font-weight: bold">.</span>puzzle <span style="font-weight: bold">== </span><span style="color: red">'cover'</span><span style="font-weight: bold">:
+            </span>problem <span style="font-weight: bold">= </span>BlokusCoverProblem<span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">1</span><span style="font-weight: bold">], </span>options<span style="font-weight: bold">.</span>size<span style="font-weight: bold">[</span><span style="color: red">0</span><span style="font-weight: bold">], </span>piece_list<span style="font-weight: bold">, </span>options<span style="font-weight: bold">.</span>start<span style="font-weight: bold">, </span>targets<span style="font-weight: bold">)
+
+        </span><span style="color: blue; font-weight: bold">if </span>options<span style="font-weight: bold">.</span>search_func <span style="color: blue; font-weight: bold">in </span><span style="font-weight: bold">[</span><span style="color: red">'dfs'</span><span style="font-weight: bold">, </span><span style="color: red">'bfs'</span><span style="font-weight: bold">, </span><span style="color: red">'ucs'</span><span style="font-weight: bold">]:
+            </span>search <span style="font-weight: bold">= </span>__import__<span style="font-weight: bold">(</span><span style="color: red">'search'</span><span style="font-weight: bold">)
+            </span>play_simple_search<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">, </span>getattr<span style="font-weight: bold">(</span>search<span style="font-weight: bold">, </span>options<span style="font-weight: bold">.</span>search_func<span style="font-weight: bold">))
+        </span><span style="color: blue; font-weight: bold">elif </span>options<span style="font-weight: bold">.</span>search_func <span style="font-weight: bold">== </span><span style="color: red">'astar'</span><span style="font-weight: bold">:
+            </span>play_a_star_search<span style="font-weight: bold">(</span>problem<span style="font-weight: bold">, </span>load_heuristic<span style="font-weight: bold">(</span>options<span style="font-weight: bold">.</span>h_func<span style="font-weight: bold">))
+    </span><span style="color: blue; font-weight: bold">else</span><span style="font-weight: bold">:
+        </span><span style="color: blue; font-weight: bold">raise </span>Exception<span style="font-weight: bold">(</span><span style="color: red">'unrecognized options'</span><span style="font-weight: bold">)
+
+
+</span><span style="color: blue; font-weight: bold">if </span>__name__ <span style="font-weight: bold">== </span><span style="color: red">"__main__"</span><span style="font-weight: bold">:
+    </span>main<span style="font-weight: bold">()
+    </span>input<span style="font-weight: bold">(</span><span style="color: red">"Press Enter to continue..."</span><span style="font-weight: bold">)
+</span>
+  </pre>
+  </body>
+  </html>
+  

@@ -1,0 +1,54 @@
+mikeg
+211747639
+Mike Greenbaum
+
+I discussed the exercise with:
+=============================
+=  README for ex1:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 1 file:
+
+ex7.py - a file that has recursive functions
+
+
+======================
+=  Special Comments  =
+======================
+
+EFFICIENCY:
+is_prime - it has 1 check and calls a
+    function that checks with O(1) commands every number from n-1 to 2,
+    therefore the bigO of the function is O(n)*O(1) + O(1) = O(n)
+
+print_no_repetition_sequences - it calls a function to get a list of all
+    sequences and then prints them.
+    notice that the length of the returned list is m! / (m - n)! when
+    m = len(char_list) and n is the input
+    therefore the bigO of printing the list is O(m! / (m - n)!)
+    the function that returns the sequences runs from 1 to n and each times
+    does O(len(list) * m)
+    notice that len(list) = m! / (m - i)! when i is the input of the function
+    until now, i is from 1 to n-1,
+    and for n=1 the bigO is O(1)
+    therefore the function bigO of the function is
+    O(1) + O(m * m! / (m-1)!) + ... + O(m * m! / (m-n-1)!)
+    = O(m * m! / (m-1)!) + ... + O(m * m! / (m-n-1)!)
+    ANSWER: therefore the bigO of print_no_repetition_sequences is
+    O(m! / (m - n)!) + O(1) + O(m * m! / (m-1)!) + ... + O(m * m! / (m-n-1)!)
+    = O(m * m! / (m-1)!) + ... + O(m * m! / (m-n-1)!) + O(m! / (m - n)!)
+    = O(m * m! / (m-1)! + ... + m * m! / (m-n)!)
+    = O(m * (m! / (m-1)! + ... + m! / (m-n)!))
+
+
+flood_fill - lets assume worst case scenario, all the inputs are '.',
+    then the function will come to every point at most 5 times
+    (from itself and those who near it), therefore the bigO of the function
+    is at most O(m*n)
+    when n = len(image), m = len(image[0])
+    (assuming it is a valid table input, i.e len(image[i]) = len(image[j])
+    for all valid i,j

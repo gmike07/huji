@@ -1,0 +1,152 @@
+mikeg,guylevy1234
+Mike Greenbaum,Guy Levy
+
+I discussed the exercise with:
+=============================
+=  README for ex6:          =
+=============================
+
+==================
+=  Description:  =
+==================
+
+This exercise has 3 files:
+
+README - this file
+AUTHORS - a file that contains the authors of the project
+wave_editor.py - a file that gets input from user and changes,
+ merges or creates wav files corresponding to the given input
+
+======================
+=  Special Comments  =
+======================
+
+the program is spillted into parts:
+
+the function main_program() awaits input (shows error if invalid input,
+    and returns to wait for input) and calls the correct function to
+    handle each input.
+    uses: handle_editing_file(), combine_files(), composite()
+
+the function handle_editing_file() awaits VALID input, alters the file's
+    data and returns the frame rate and the altered data
+    uses: input_edit_file(), handle_data(audio_data,user_choice)
+
+the function input_edit_file() awaits input file, (shows error if invalid input
+    and returns to wait for input), loads the file's data
+    returns the data in the file:
+        frame_rate, audio_data (int, list of lists of 2 ints)
+    uses: load_wave() to check if the input is valid
+
+the function save_file(frame_rate, audio_data) gets an int
+    and a list of lists of 2 ints.
+    the function awaits output file, (shows error if invalid input
+    and returns to wait for input), and after a VALID file was given,
+    it stores the data in the given file.
+    uses: save_wave(frame_rate, audio_data, file_name)
+        to check if the input is valid
+
+the function handle_data(data, user_input) works with the data from
+    the input file and the user input. call the correct
+        function to handle the input
+        uses: reverse_data(data), speed_up_data(data), speed_down_data(data)
+            , volume_data(data, SCALAR), low_pass_filter(data)
+
+the function reverse_data(data) gets a list and returns the list reversed
+
+the function speed_up_data(data) gets a list and
+    returns the list only in even indexes
+
+the function speed_down_data(data) gets a list of lists that contain 2 ints,
+    and returns a new list when between every 2 elements there is another
+    element, their average
+    uses: mid_value(lst)
+
+the function low_pass_filter(data) gets a list of lists that contain 2 ints,
+    and returns a new list when a[i] = average(a[i-1], a[i], a[i+1])
+        if possible, else ignores the indexes that will throw an error
+    uses: mid_value(lst)
+
+the function mid_value(lst) gets a list of lists that contain 2 ints,
+    and returns a list when a[i] = average(lst[i]) for how many lists there are
+    uses: sum_j_index_list(j, lst)
+
+the function sum_j_index_list(j, lst) gets a list of lists that contain 2 ints,
+    and an index j, and returns the sm of the list in col j in the matrix
+
+the function volume_data(data, volume) gets a list of lists that
+    contain 2 ints, and a float. it returns the data multiplied by the scalar,
+       if the number is bigger than MAX or less than MIN it returns MIN or MAX,
+       according to which one is closer to the number
+    uses: mul_values
+
+the function mul_values(data, scalar) gets a list and a new data when
+    new_data[i] = data[i] * scalar if MIN <= data[i] <= MAX
+    if data[i] > MAX it returns MAX and if data[i] < MIN it returns MIN
+    uses: squash_between_min_max
+
+the function squash_between_min_max(a) gets a number and
+    returns max(MIN, min(MAX, a)) i.e returns a if MIN <= a <= MAX,
+    if a > MAX, returns MAX, and if a < MIN returns MIN
+
+the function composite_one_sound(letter, end) gets a letter and a length,
+    it composes a song of the given letter for the length time and returns the
+    data of the composed song as a list of lists of 2 ints.
+
+the function composite() gets an input file, composes the music
+    and calls the function transition menu
+    uses: get_composite_input(), composite_one_sound(letter, end)
+        ,transition_menu(frame_rate, data)
+
+the function get_composite_input() gets a VALID input file to read,
+    and while the file is incorrect format, outputs an error and
+    awaits new input
+    uses: meets_composition_requirements(user_data), read_file(file_path)
+
+the function read_file(file_path) gets a file and returns a list of
+    every word in the file, (words are separated by spaces)
+
+the function meets_composition_requirements(user_input) gets a list of inputs
+    and returns whether it is a composition
+    uses: is_number(string)
+
+the function is_number(string) gets a string and returns whether the string
+    can be converted into an int or not
+
+the function gcd(x, y) gets two numbers and returns their gcd
+
+the function combine_files() gets input from user, combines file
+    and calls the function transition menu
+    uses: get_combined_files_data(), gcd(x, y)
+        , combine_data(data1, data2, num1, num2)),
+        transition_menu(frame_rate, data)
+
+the function get_combined_files_data() gets input from user and returns
+    VALID output data of the first file then the second one, while wrong input
+    it outputs an error, and awaits new input
+    uses: get_input_combine_files()
+
+the function get_input_combine_files() gets an input from user and
+    returns a tuple of the 2 inputs if the input was <input1> <input2> else
+    it outputs an error and awaits for new input
+
+the function combine_data(data1, data2, num1, num2) gets 2 data's and their
+    frequencies divided by gcd, and returns the combined data
+    uses: mid_values(data1, data2), extend_longest_data(data, num1, num2)
+
+the function extend_longest_data(data, num1, num2) gets data (list of lists
+    of 2 ints) and 2 numbers which are the frame rate of 2 audio files;
+    the program adding data up to num1 deletes data up to num2 and repeats and
+    returns the extended data
+
+the function mid_values(data1, data2) gets 2 data's and returns a
+    new data when data[i] = average (data1[i], data2[i])
+    there might be data ignored from data2
+    uses: mid_value(lst)
+
+the transition_menu(frame_rate, data) gets a list of lists that
+    contain 2 ints, and an int and then asks the user to choose one
+    of 2 options:
+    - save the data
+    - change the data
+    uses: handle_editing_file(frame_rate, data), save_file(frame_rate, data)

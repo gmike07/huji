@@ -1,0 +1,4 @@
+the filter size im lets us control how much detail is blur \ saved from one
+pyramid to the next compressed one. i.e. if we increase the filter size, more
+of the detail will be left in the first layers of the pyramid and the blending
+will look a bit smoother \ blurred.

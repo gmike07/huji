@@ -1,0 +1,34 @@
+BlokusCoverProblem(8, 8, PieceList("small_set.txt"), (3,3), [(2, 2), (5,5), (6, 7)]) Best score: 8
+
+
+prob = BlokusFillProbelem(20, 20, PieceList"small_set.txt"))
+playAStarSearch(prob, bigPieceHuristic) Expanded nodes: 1277
+
+prob = BlokusFillProbelem(13, 13, PieceList("small_set.txt"))
+playAStarSearch(prob, bigPieceHuristic) Expanded nodes: 129
+
+prob = BlokusFillProbelem(11, 11, PieceList("small_set.txt"))
+playAStarSearch(prob, bigPieceHuristic) Expanded nodes: 29
+
+prob = BlokusFillProbelem(4, 7, PieceList("tiny_pieces.txt"))
+playAStarSearch(prob, bigPieceHuristic)
+Expanded nodes: 1056 (dfs: 1054 bfs: 2214)
+
+prob = BlokusFillProbelem(14, 14, PieceList("valid_pieces.txt"))
+playSimpleSearch(prob, dfs)
+Expanded nodes: 21
+
+
+prob = BlokusCoverProblem(10, 10,  PieceList("small_set.txt"), (3,3), [(2, 2), (5,5), (6, 7)])
+playAStarSearch(prob, blocusCoverHueristic)
+Expanded nodes: 563 for admissible huristic 
+
+
+prob = BlokusCoverProblem(10, 10,  PieceList("small_set.txt"), (3,3), [(2, 2), (5,5), (6, 7)])
+playAStarSearch(prob, blocusCoverHueristic)
+Expanded nodes: 21 for slightly inadmissible huristic (got diffirent optimal solution)
+
+
+prob = BlokusCoverProblem(10, 10,  PieceList("small_set.txt"), (3,3), [(2, 2), (5,5), (6, 7)])
+playAStarSearch(prob, blocusCoverHueristic)
+Expanded nodes: 3 for very inadmissible huristic (got suboptimal solution) 

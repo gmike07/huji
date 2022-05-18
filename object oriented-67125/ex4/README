@@ -1,0 +1,69 @@
+mikeg
+
+
+
+=============================
+=      File description     =
+=============================
+ClosedHashSet.java - contains the closed hash set implementation
+CollectionFacadeSet.java - contains the facade set implementation for time analyzing
+OpenHashSet.java - contains the open hash set implementation
+WrapperLinkedList.java - contains the wrapper class to link lists for the open hash implementation
+SimpleSetPerformanceAnalyzer.java - contains a class to analyze hash set implementations
+README - this file
+RESULTS - the results from SimpleSetPerformanceAnalyzer.java
+SimpleHashSet.java - a simple abstract class of hash set implementation
+SimpleSet.java - an interface of a set
+
+=============================
+=          Design           =
+=============================
+I decided to implement the capacity, size functions in the simpleHash because the open and close have the same
+implementation for those functions, and both extend the SimpleHashSet
+In open hash set, I decided to create a wrapper class to linked list, in order to store the data in array of
+wrapper class.
+In closed hash set, I decided to create an array of objects because it is easy to extend to every type of
+objects and not only strings. Furthermore, in order to signify that an item was deleted, I have an emptyCell
+object which represents that the cell is empty.
+In SimpleHashSet, i decided the class to print the required things to the results files, in order to make it
+easier to see the differences. Furthermore, i decided to store all the types of hashes to compare in arrays,
+in order to make it easy to check each one individually, even though the tests check all the implementations
+together.
+
+=============================
+=    Answers to questions   =
+=============================
+1.
+As I wrote in the Design section, In open hash set, I decided to create a wrapper class to linked list, in
+                             order to store the data in array of wrapper class.
+2.
+As I wrote in the Design section, In closed hash set, I decided to create an array of objects because it is
+                                  easy to extend to every type of objects and not only strings. Furthermore,
+                                  in order to signify that an item was deleted, I have an emptyCell
+                                  object which represents that the cell is empty.
+3.
+The reason that OpenHashSet takes a lot of time to insert data1 is that: for each element that is added to
+                             the hash, first need to be checked if it is in the hash, because all the strings
+                             have the same hash, the length of the lists is the size of the hash, therefore it
+                             takes O(n) time. Therefore, the complexity is about c*(1+2+3+4+...+n)=O(n^2)
+The reason that ClosedHashSet takes a lot of time to insert data1 is that: for each element that is added to
+                             the hash, the function needs to find an empty location for it, because  all the
+                             strings have the same hash, the amount of times we will search with i is the
+                             size of the hash,therefore it takes O(n) time. Therefore, the complexity is
+                             about c*(1+2+3+4+...+n)=O(n^2)
+4.
+The best hash overall was the Java's HashSet.
+The tree set works well in all the scenarios. It handles addition not badly (in both cases), It doesn't take
+to long to check if an element is in the set however it was outperformed by the hash set in every test,
+therefore I won't use it unless I am required to.
+Both Open and Closed hash sets work good with contains, however adding items that don't have natural mixture
+will cause the search of Closed hash set, and the addition in both cases to be slow.
+The worst was LinkedList, because it isn't a set at all. I might use it when I don't need to know if an
+element is in the list or not, however even then, adding an item takes O(n) time.
+5.
+The OpenHashSet is better when the data MAY have the same hash, better at adding and searching. However, when
+the data is natural mixture then the contains is almost the same in both cases, however adding was faster in
+ClosedHashSet.
+6.
+As specified in answer 4, HashSet preformed almost always better then Open and Closed hash set, and when he
+was outperformed it was by a very small margin.
